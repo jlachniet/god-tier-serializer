@@ -132,7 +132,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ URIError
    ❌ Date
    ❌ RegExp
-   ❌ Array
+   📝 Array
      ❌ Int8Array
      ❌ Uint8Array
      ❌ Uint8ClampedArray

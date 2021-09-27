@@ -7,6 +7,7 @@ var GodTierSerializer = (function () {
     var prototypeDefinitions = [
         [null, 'null'],
         [Object.prototype, 'Object'],
+        [Array.prototype, 'Array'],
     ];
     /**
      * Polyfill for {@link Array.prototype.find}, gets the first element in an
@@ -390,7 +391,12 @@ var GodTierSerializer = (function () {
                     break;
                 default:
                     var definition = getDefinitionByName(value[1]);
-                    originalValues.push(Object.create(definition[0]));
+                    if (definition[1] === 'Array') {
+                        originalValues.push(new Array());
+                    }
+                    else {
+                        originalValues.push(Object.create(definition[0]));
+                    }
             }
         });
         mappedValues.forEach(function (value, index) {

@@ -175,6 +175,7 @@ var GodTierSerializer = (function () {
 	var prototypeDefinitions: PrototypeDefinition[] = [
 		[null, 'null'],
 		[Object.prototype, 'Object'],
+		[Array.prototype, 'Array'],
 	];
 
 	/**
@@ -615,7 +616,14 @@ var GodTierSerializer = (function () {
 					break;
 				default:
 					var definition = getDefinitionByName((value as GTObject)[1])!;
-					originalValues.push(Object.create(definition[0]));
+					if (definition[1] === 'Array') {
+						// Object.create(Array.prototype) does not create a
+						// native array, but an object with Array.prototype as
+						// the prototype.
+						originalValues.push(new Array());
+					} else {
+						originalValues.push(Object.create(definition[0]));
+					}
 			}
 		});
 
