@@ -1,0 +1,28 @@
+{
+	"name": "god-tier-serializer",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Convert any value to and from a serialized string with no headache.",
+	"keywords": [
+		"god-tier-serializer",
+		"serialize",
+		"serialization",
+		"deserialize",
+		"deserialization"
+	],
+	"homepage": "https://github.com/jlachniet/god-tier-serializer#readme",
+	"bugs": "https://github.com/jlachniet/god-tier-serializer/issues",
+	"repository": "https://github.com/jlachniet/god-tier-serializer",
+	"license": "MIT",
+	"author": "Julian Lachniet",
+	"main": "god-tier-serializer.js",
+	"types": "god-tier-serialize.d.ts",
+	"prettier": {
+		"singleQuote": true,
+		"useTabs": true
+	},
+	"devDependencies": {
+		"@types/node": "^16.9.4",
+		"typescript": "^4.4.3"
+	}
+}
