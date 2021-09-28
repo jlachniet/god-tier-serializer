@@ -110,11 +110,23 @@ Since **god-tier-serializer** is still in development, not every built-in type i
 ✔️ Boolean
 ✔️ Number
 ✔️ String
-❌ Symbol
 📝 Object
    📝 Object with prototype null
    📝 Object with prototype Object.prototype
    📝 Object with custom prototype
+   📝 Array
+     ❌ Int8Array
+     ❌ Uint8Array
+     ❌ Uint8ClampedArray
+     ❌ Int16Array
+     ❌ Uint16Array
+     ❌ Int32Array
+     ❌ Uint32Array
+     ❌ Float32Array
+     ❌ Float64Array
+     ❌ BigInt64Array
+     ❌ BigUint64Array
+   📝 Date
    ❌ Function
    ❌ BigInt Object
    ❌ Boolean Object
@@ -130,20 +142,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ SyntaxError
      ❌ TypeError
      ❌ URIError
-   ❌ Date
    ❌ RegExp
-   📝 Array
-     ❌ Int8Array
-     ❌ Uint8Array
-     ❌ Uint8ClampedArray
-     ❌ Int16Array
-     ❌ Uint16Array
-     ❌ Int32Array
-     ❌ Uint32Array
-     ❌ Float32Array
-     ❌ Float64Array
-     ❌ BigInt64Array
-     ❌ BigUint64Array
    ❌ Map
    ❌ Set
    ❌ WeakMap
@@ -172,6 +171,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    ❌ WebAssembly.CompileError
    ❌ WebAssembly.LinkError
    ❌ WebAssembly.RuntimeError
+❌ Symbol
 ```
 
 ## License

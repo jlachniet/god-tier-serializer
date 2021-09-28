@@ -45,7 +45,8 @@ type GTAny =
 	| GTNumber
 	| GTString
 	| GTObject
-	| GTArray;
+	| GTArray
+	| GTDate;
 
 /**
  * Undefined structured for serialization.
@@ -160,6 +161,28 @@ type GTArray = [
 ];
 
 /**
+ * A date structured for serialization.
+ */
+type GTDate = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'date',
+	/**
+	 * The name of the prototype.
+	 */
+	prototypeName: string,
+	/**
+	 * The properties of the date.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The internal value of the date.
+	 */
+	internalValue: number
+];
+
+/**
  * A property of a {@link GTObject}.
  */
 type GTProperty = [
@@ -195,6 +218,7 @@ var GodTierSerializer = (function () {
 		[null, 'null'],
 		[Object.prototype, 'Object'],
 		[Array.prototype, 'Array'],
+		[Date.prototype, 'Date'],
 	];
 
 	/**
@@ -555,11 +579,19 @@ var GodTierSerializer = (function () {
 			}
 
 			// Create the corresponding GTObject.
-			var mapped: GTObject | GTArray;
+			var mapped: GTObject | GTArray | GTDate;
 			if (definition) {
 				switch (Object.prototype.toString.call(object)) {
 					case '[object Array]':
 						mapped = ['array', definition[1], []] as GTArray;
+						break;
+					case '[object Date]':
+						mapped = [
+							'date',
+							definition[1],
+							[],
+							Date.prototype.valueOf.call(object) as number,
+						] as GTDate;
 						break;
 					default:
 						mapped = ['object', definition[1], []] as GTObject;
@@ -641,25 +673,39 @@ var GodTierSerializer = (function () {
 					break;
 				default:
 					var definition = getDefinitionByName((value as GTObject)[1])!;
+					var originalValue: any;
+
 					if (value[0] === 'array') {
-						if (value[1] === 'Array') {
-							originalValues.push(new Array());
-						} else {
-							var array = new Array();
+						originalValue = new Array();
+						if (value[1] !== 'Array') {
 							if (Object.setPrototypeOf) {
-								Object.setPrototypeOf(array, definition[0]);
-							} else if ((array as any).__proto__) {
-								(array as any).__proto__ = Array.prototype;
+								Object.setPrototypeOf(originalValue, definition[0]);
+							} else if ((originalValue as any).__proto__) {
+								(originalValue as any).__proto__ = Array.prototype;
 							} else {
 								throw new TypeError(
-									'Could not deserialize native array with modified constructor, unsupported by environment'
+									'Could not deserialize array with modified constructor, unsupported by environment'
 								);
 							}
-							originalValues.push(array);
+						}
+					} else if (value[0] === 'date') {
+						originalValue = new Date(value[3]);
+						if (value[1] !== 'Date') {
+							if (Object.setPrototypeOf) {
+								Object.setPrototypeOf(originalValue, definition[0]);
+							} else if ((originalValue as any).__proto__) {
+								(originalValue as any).__proto__ = Date.prototype;
+							} else {
+								throw new TypeError(
+									'Could not deserialize date with modified constructor, unsupported by environment'
+								);
+							}
 						}
 					} else {
 						originalValues.push(Object.create(definition[0]));
 					}
+
+					originalValues.push(originalValue);
 			}
 		});
 

@@ -35,7 +35,7 @@ declare type PrototypeDefinition = [
 /**
  * A value structured for serialization.
  */
-declare type GTAny = GTUndefined | GTNull | GTBigInt | GTBoolean | GTNumber | GTString | GTObject | GTArray;
+declare type GTAny = GTUndefined | GTNull | GTBigInt | GTBoolean | GTNumber | GTString | GTObject | GTArray | GTDate;
 /**
  * Undefined structured for serialization.
  */
@@ -139,6 +139,27 @@ declare type GTArray = [
      * The properties of the array.
      */
     properties: GTProperty[]
+];
+/**
+ * A date structured for serialization.
+ */
+declare type GTDate = [
+    /**
+     * The type of the value.
+     */
+    type: 'date',
+    /**
+     * The name of the prototype.
+     */
+    prototypeName: string,
+    /**
+     * The properties of the date.
+     */
+    properties: GTProperty[],
+    /**
+     * The internal value of the date.
+     */
+    internalValue: number
 ];
 /**
  * A property of a {@link GTObject}.

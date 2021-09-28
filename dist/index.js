@@ -8,6 +8,7 @@ var GodTierSerializer = (function () {
         [null, 'null'],
         [Object.prototype, 'Object'],
         [Array.prototype, 'Array'],
+        [Date.prototype, 'Date'],
     ];
     /**
      * Polyfill for {@link Array.prototype.find}, gets the first element in an
@@ -319,11 +320,20 @@ var GodTierSerializer = (function () {
             // Create the corresponding GTObject.
             var mapped;
             if (definition) {
-                if (Array.isArray(object)) {
-                    mapped = ['array', definition[1], []];
-                }
-                else {
-                    mapped = ['object', definition[1], []];
+                switch (Object.prototype.toString.call(object)) {
+                    case '[object Array]':
+                        mapped = ['array', definition[1], []];
+                        break;
+                    case '[object Date]':
+                        mapped = [
+                            'date',
+                            definition[1],
+                            [],
+                            Date.prototype.valueOf.call(object),
+                        ];
+                        break;
+                    default:
+                        mapped = ['object', definition[1], []];
                 }
             }
             else {
@@ -396,27 +406,39 @@ var GodTierSerializer = (function () {
                     break;
                 default:
                     var definition = getDefinitionByName(value[1]);
+                    var originalValue;
                     if (value[0] === 'array') {
-                        if (value[1] === 'Array') {
-                            originalValues.push([]);
-                        }
-                        else {
-                            var array = new Array();
+                        originalValue = new Array();
+                        if (value[1] !== 'Array') {
                             if (Object.setPrototypeOf) {
-                                Object.setPrototypeOf(array, definition[0]);
+                                Object.setPrototypeOf(originalValue, definition[0]);
                             }
-                            else if (array.__proto__) {
-                                array.__proto__ = Array.prototype;
+                            else if (originalValue.__proto__) {
+                                originalValue.__proto__ = Array.prototype;
                             }
                             else {
-                                throw new TypeError('Could not deserialize native array with modified constructor, unsupported by environment');
+                                throw new TypeError('Could not deserialize array with modified constructor, unsupported by environment');
                             }
-                            originalValues.push(array);
+                        }
+                    }
+                    else if (value[0] === 'date') {
+                        originalValue = new Date(value[3]);
+                        if (value[1] !== 'Date') {
+                            if (Object.setPrototypeOf) {
+                                Object.setPrototypeOf(originalValue, definition[0]);
+                            }
+                            else if (originalValue.__proto__) {
+                                originalValue.__proto__ = Date.prototype;
+                            }
+                            else {
+                                throw new TypeError('Could not deserialize date with modified constructor, unsupported by environment');
+                            }
                         }
                     }
                     else {
                         originalValues.push(Object.create(definition[0]));
                     }
+                    originalValues.push(originalValue);
             }
         });
         mappedValues.forEach(function (value, index) {
