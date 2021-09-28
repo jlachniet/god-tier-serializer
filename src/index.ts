@@ -557,10 +557,12 @@ var GodTierSerializer = (function () {
 			// Create the corresponding GTObject.
 			var mapped: GTObject | GTArray;
 			if (definition) {
-				if (Array.isArray(object)) {
-					mapped = ['array', definition[1], []];
-				} else {
-					mapped = ['object', definition[1], []];
+				switch (Object.prototype.toString.call(object)) {
+					case '[object Array]':
+						mapped = ['array', definition[1], []] as GTArray;
+						break;
+					default:
+						mapped = ['object', definition[1], []] as GTObject;
 				}
 			} else {
 				// When config.forceSerialization is enabled, objects without a
@@ -641,7 +643,7 @@ var GodTierSerializer = (function () {
 					var definition = getDefinitionByName((value as GTObject)[1])!;
 					if (value[0] === 'array') {
 						if (value[1] === 'Array') {
-							originalValues.push([]);
+							originalValues.push(new Array());
 						} else {
 							var array = new Array();
 							if (Object.setPrototypeOf) {
