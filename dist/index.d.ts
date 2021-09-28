@@ -117,7 +117,7 @@ declare type GTStandardObject = [
     /**
      * The type of the value.
      */
-    type: 'object',
+    type: 'Object',
     /**
      * The name of the prototype.
      */
@@ -134,7 +134,7 @@ declare type GTArray = [
     /**
      * The type of the value.
      */
-    type: 'array',
+    type: 'Array',
     /**
      * The name of the prototype.
      */
@@ -151,7 +151,7 @@ declare type GTDate = [
     /**
      * The type of the value.
      */
-    type: 'date',
+    type: 'Date',
     /**
      * The name of the prototype.
      */
@@ -172,7 +172,7 @@ declare type GTRegExp = [
     /**
      * The type of the value.
      */
-    type: 'regexp',
+    type: 'RegExp',
     /**
      * The name of the prototype.
      */

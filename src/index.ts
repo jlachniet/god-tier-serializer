@@ -134,7 +134,7 @@ type GTStandardObject = [
 	/**
 	 * The type of the value.
 	 */
-	type: 'object',
+	type: 'Object',
 	/**
 	 * The name of the prototype.
 	 */
@@ -152,7 +152,7 @@ type GTArray = [
 	/**
 	 * The type of the value.
 	 */
-	type: 'array',
+	type: 'Array',
 	/**
 	 * The name of the prototype.
 	 */
@@ -170,7 +170,7 @@ type GTDate = [
 	/**
 	 * The type of the value.
 	 */
-	type: 'date',
+	type: 'Date',
 	/**
 	 * The name of the prototype.
 	 */
@@ -192,7 +192,7 @@ type GTRegExp = [
 	/**
 	 * The type of the value.
 	 */
-	type: 'regexp',
+	type: 'RegExp',
 	/**
 	 * The name of the prototype.
 	 */
@@ -609,11 +609,11 @@ var GodTierSerializer = (function () {
 			if (definition) {
 				switch (Object.prototype.toString.call(object).slice(8, -1)) {
 					case 'Array':
-						mapped = ['array', definition[1], []] as GTArray;
+						mapped = ['Array', definition[1], []] as GTArray;
 						break;
 					case 'Date':
 						mapped = [
-							'date',
+							'Date',
 							definition[1],
 							[],
 							Date.prototype.valueOf.call(object) as number,
@@ -621,19 +621,19 @@ var GodTierSerializer = (function () {
 						break;
 					case 'RegExp':
 						mapped = [
-							'regexp',
+							'RegExp',
 							definition[1],
 							[],
 							RegExp.prototype.toString.call(object) as string,
 						] as GTRegExp;
 						break;
 					default:
-						mapped = ['object', definition[1], []] as GTStandardObject;
+						mapped = ['Object', definition[1], []] as GTStandardObject;
 				}
 			} else {
 				// When config.forceSerialization is enabled, objects without a
 				// definition become instances of Object.prototype.
-				mapped = ['object', 'Object', []];
+				mapped = ['Object', 'Object', []];
 			}
 
 			// Push the object and GTObject to the known and mapped values.
@@ -709,51 +709,34 @@ var GodTierSerializer = (function () {
 					var definition = getDefinitionByName((value as GTObject)[1])!;
 					var originalValue: any;
 
-					if (value[0] === 'array') {
-						originalValue = new Array();
-						if (value[1] !== 'Array') {
-							if (Object.setPrototypeOf) {
-								Object.setPrototypeOf(originalValue, definition[0]);
-							} else if ((originalValue as any).__proto__) {
-								(originalValue as any).__proto__ = Array.prototype;
-							} else {
-								throw new TypeError(
-									'Could not deserialize array with modified constructor, unsupported by environment'
-								);
-							}
-						}
-					} else if (value[0] === 'date') {
-						originalValue = new Date(value[3]);
-						if (value[1] !== 'Date') {
-							if (Object.setPrototypeOf) {
-								Object.setPrototypeOf(originalValue, definition[0]);
-							} else if ((originalValue as any).__proto__) {
-								(originalValue as any).__proto__ = Date.prototype;
-							} else {
-								throw new TypeError(
-									'Could not deserialize date with modified constructor, unsupported by environment'
-								);
-							}
-						}
-					} else if (value[0] === 'regexp') {
-						let lastSlashPosition = value[3].lastIndexOf('/');
-						let pattern = value[3].substring(1, lastSlashPosition);
-						let flags = value[3].substring(lastSlashPosition + 1);
+					switch (value[0]) {
+						case 'Array':
+							originalValue = new Array();
+							break;
+						case 'Date':
+							originalValue = new Date(value[3]);
+							break;
+						case 'RegExp':
+							let lastSlashPosition = value[3].lastIndexOf('/');
+							let pattern = value[3].substring(1, lastSlashPosition);
+							let flags = value[3].substring(lastSlashPosition + 1);
 
-						originalValue = new RegExp(pattern, flags);
-						if (value[1] !== 'RegExp') {
-							if (Object.setPrototypeOf) {
-								Object.setPrototypeOf(originalValue, definition[0]);
-							} else if ((originalValue as any).__proto__) {
-								(originalValue as any).__proto__ = RegExp.prototype;
-							} else {
-								throw new TypeError(
-									'Could not deserialize RegExp with modified constructor, unsupported by environment'
-								);
-							}
+							originalValue = new RegExp(pattern, flags);
+							break;
+						default:
+							originalValues.push(Object.create(definition[0]));
+					}
+
+					if (value[0] !== value[1]) {
+						if (Object.setPrototypeOf) {
+							Object.setPrototypeOf(originalValue, definition[0]);
+						} else if ((originalValue as any).__proto__) {
+							(originalValue as any).__proto__ = definition[0];
+						} else {
+							throw new TypeError(
+								'Could not deserialize RegExp with modified constructor, unsupported by environment'
+							);
 						}
-					} else {
-						originalValues.push(Object.create(definition[0]));
 					}
 
 					originalValues.push(originalValue);
@@ -761,7 +744,12 @@ var GodTierSerializer = (function () {
 		});
 
 		mappedValues.forEach(function (value, index) {
-			if (value[0] == 'object' || value[0] == 'array') {
+			if (
+				value[0] == 'Object' ||
+				value[0] == 'Array' ||
+				value[0] == 'Date' ||
+				value[0] == 'RegExp'
+			) {
 				value[2].forEach(function (property) {
 					Object.defineProperty(
 						originalValues[index],
