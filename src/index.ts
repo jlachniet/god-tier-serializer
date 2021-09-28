@@ -49,7 +49,7 @@ type GTAny =
 /**
  * An object structured for serialization.
  */
-type GTObject = GTStandardObject | GTArray | GTDate | GTRegExp;
+type GTObject = GTStandardObject | GTArray | GTDate | GTRegExp | GTStringObject;
 
 /**
  * Undefined structured for serialization.
@@ -208,6 +208,28 @@ type GTRegExp = [
 ];
 
 /**
+ * A string object structured for serialization.
+ */
+type GTStringObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'String',
+	/**
+	 * The name of the prototype.
+	 */
+	prototypeName: string,
+	/**
+	 * The properties of the string object.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The internal value of the string object.
+	 */
+	internalValue: string
+];
+
+/**
  * A property of a {@link GTStandardObject}.
  */
 type GTProperty = [
@@ -245,6 +267,7 @@ var GodTierSerializer = (function () {
 		[Array.prototype, 'Array'],
 		[Date.prototype, 'Date'],
 		[RegExp.prototype, 'RegExp'],
+		[String.prototype, 'String'],
 	];
 
 	/**
@@ -636,6 +659,14 @@ var GodTierSerializer = (function () {
 							RegExp.prototype.toString.call(object) as string,
 						] as GTRegExp;
 						break;
+					case 'String':
+						mapped = [
+							'String',
+							definition[1],
+							[],
+							String.prototype.valueOf.call(object) as string,
+						] as GTStringObject;
+						break;
 					default:
 						mapped = ['Object', definition[1], []] as GTStandardObject;
 				}
@@ -731,6 +762,9 @@ var GodTierSerializer = (function () {
 							let flags = value[3].substring(lastSlashPosition + 1);
 
 							originalValue = new RegExp(pattern, flags);
+							break;
+						case 'String':
+							originalValue = new String(value[3]);
 							break;
 						default:
 							originalValues.push(Object.create(definition[0]));

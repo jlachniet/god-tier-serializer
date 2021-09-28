@@ -132,7 +132,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    ❌ BigInt Object
    ❌ Boolean Object
    ❌ Number Object
-   ❌ String Object
+   📝 String Object
    ❌ Symbol Object
    ❌ Error
      ❌ AggregateError

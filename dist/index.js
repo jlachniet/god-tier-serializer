@@ -10,6 +10,7 @@ var GodTierSerializer = (function () {
         [Array.prototype, 'Array'],
         [Date.prototype, 'Date'],
         [RegExp.prototype, 'RegExp'],
+        [String.prototype, 'String'],
     ];
     /**
      * Polyfill for {@link Array.prototype.find}, gets the first element in an
@@ -349,6 +350,14 @@ var GodTierSerializer = (function () {
                             RegExp.prototype.toString.call(object),
                         ];
                         break;
+                    case 'String':
+                        mapped = [
+                            'String',
+                            definition[1],
+                            [],
+                            String.prototype.valueOf.call(object),
+                        ];
+                        break;
                     default:
                         mapped = ['Object', definition[1], []];
                 }
@@ -436,6 +445,9 @@ var GodTierSerializer = (function () {
                             let pattern = value[3].substring(1, lastSlashPosition);
                             let flags = value[3].substring(lastSlashPosition + 1);
                             originalValue = new RegExp(pattern, flags);
+                            break;
+                        case 'String':
+                            originalValue = new String(value[3]);
                             break;
                         default:
                             originalValues.push(Object.create(definition[0]));

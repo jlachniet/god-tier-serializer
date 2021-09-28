@@ -39,7 +39,7 @@ declare type GTAny = GTUndefined | GTNull | GTBigInt | GTBoolean | GTNumber | GT
 /**
  * An object structured for serialization.
  */
-declare type GTObject = GTStandardObject | GTArray | GTDate | GTRegExp;
+declare type GTObject = GTStandardObject | GTArray | GTDate | GTRegExp | GTStringObject;
 /**
  * Undefined structured for serialization.
  */
@@ -183,6 +183,27 @@ declare type GTRegExp = [
     properties: GTProperty[],
     /**
      * The internal value of the RegExp.
+     */
+    internalValue: string
+];
+/**
+ * A string object structured for serialization.
+ */
+declare type GTStringObject = [
+    /**
+     * The type of the value.
+     */
+    type: 'String',
+    /**
+     * The name of the prototype.
+     */
+    prototypeName: string,
+    /**
+     * The properties of the string object.
+     */
+    properties: GTProperty[],
+    /**
+     * The internal value of the string object.
      */
     internalValue: string
 ];
