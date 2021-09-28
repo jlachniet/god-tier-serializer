@@ -35,7 +35,7 @@ declare type PrototypeDefinition = [
 /**
  * A value structured for serialization.
  */
-declare type GTAny = GTUndefined | GTNull | GTBigInt | GTBoolean | GTNumber | GTString | GTObject;
+declare type GTAny = GTUndefined | GTNull | GTBigInt | GTBoolean | GTNumber | GTString | GTObject | GTArray;
 /**
  * Undefined structured for serialization.
  */
@@ -120,6 +120,23 @@ declare type GTObject = [
     prototypeName: string,
     /**
      * The properties of the object.
+     */
+    properties: GTProperty[]
+];
+/**
+ * An array structured for serialization.
+ */
+declare type GTArray = [
+    /**
+     * The type of the value.
+     */
+    type: 'array',
+    /**
+     * The name of the prototype.
+     */
+    prototypeName: string,
+    /**
+     * The properties of the array.
      */
     properties: GTProperty[]
 ];

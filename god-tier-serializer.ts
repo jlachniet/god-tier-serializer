@@ -44,7 +44,8 @@ type GTAny =
 	| GTBoolean
 	| GTNumber
 	| GTString
-	| GTObject;
+	| GTObject
+	| GTArray;
 
 /**
  * Undefined structured for serialization.
@@ -136,6 +137,24 @@ type GTObject = [
 	prototypeName: string,
 	/**
 	 * The properties of the object.
+	 */
+	properties: GTProperty[]
+];
+
+/**
+ * An array structured for serialization.
+ */
+type GTArray = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'array',
+	/**
+	 * The name of the prototype.
+	 */
+	prototypeName: string,
+	/**
+	 * The properties of the array.
 	 */
 	properties: GTProperty[]
 ];
@@ -536,9 +555,13 @@ var GodTierSerializer = (function () {
 			}
 
 			// Create the corresponding GTObject.
-			var mapped: GTObject;
+			var mapped: GTObject | GTArray;
 			if (definition) {
-				mapped = ['object', definition[1], []];
+				if (Array.isArray(object)) {
+					mapped = ['array', definition[1], []];
+				} else {
+					mapped = ['object', definition[1], []];
+				}
 			} else {
 				// When config.forceSerialization is enabled, objects without a
 				// definition become instances of Object.prototype.
@@ -616,11 +639,22 @@ var GodTierSerializer = (function () {
 					break;
 				default:
 					var definition = getDefinitionByName((value as GTObject)[1])!;
-					if (definition[1] === 'Array') {
-						// Object.create(Array.prototype) does not create a
-						// native array, but an object with Array.prototype as
-						// the prototype.
-						originalValues.push(new Array());
+					if (value[0] === 'array') {
+						if (value[1] === 'Array') {
+							originalValues.push([]);
+						} else {
+							var array = new Array();
+							if (Object.setPrototypeOf) {
+								Object.setPrototypeOf(array, definition[0]);
+							} else if ((array as any).__proto__) {
+								(array as any).__proto__ = Array.prototype;
+							} else {
+								throw new TypeError(
+									'Could not deserialize native array with modified constructor, unsupported by environment'
+								);
+							}
+							originalValues.push(array);
+						}
 					} else {
 						originalValues.push(Object.create(definition[0]));
 					}
@@ -628,7 +662,7 @@ var GodTierSerializer = (function () {
 		});
 
 		mappedValues.forEach(function (value, index) {
-			if (value[0] == 'object') {
+			if (value[0] == 'object' || value[0] == 'array') {
 				value[2].forEach(function (property) {
 					Object.defineProperty(
 						originalValues[index],
@@ -655,6 +689,6 @@ var GodTierSerializer = (function () {
 	};
 })();
 
-if (typeof window === 'undefined') {
+if (typeof window === 'undefined' || this !== window) {
 	module.exports = GodTierSerializer;
 }
