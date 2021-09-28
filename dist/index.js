@@ -9,6 +9,7 @@ var GodTierSerializer = (function () {
         [Object.prototype, 'Object'],
         [Array.prototype, 'Array'],
         [Date.prototype, 'Date'],
+        [RegExp.prototype, 'RegExp'],
     ];
     /**
      * Polyfill for {@link Array.prototype.find}, gets the first element in an
@@ -320,17 +321,27 @@ var GodTierSerializer = (function () {
             // Create the corresponding GTObject.
             var mapped;
             if (definition) {
-                switch (Object.prototype.toString.call(object)) {
-                    case '[object Array]':
+                switch (Object.prototype.toString.call(object).slice(8, -1)) {
+                    case 'Array':
                         mapped = ['array', definition[1], []];
                         break;
-                    case '[object Date]':
+                    case 'Date':
                         mapped = [
                             'date',
                             definition[1],
                             [],
                             Date.prototype.valueOf.call(object),
                         ];
+                        break;
+                    case 'RegExp':
+                        console.log(' -> ' + object);
+                        mapped = [
+                            'regexp',
+                            definition[1],
+                            [],
+                            RegExp.prototype.toString.call(object),
+                        ];
+                        console.log('   -> ' + JSON.stringify(mapped));
                         break;
                     default:
                         mapped = ['object', definition[1], []];
@@ -432,6 +443,24 @@ var GodTierSerializer = (function () {
                             }
                             else {
                                 throw new TypeError('Could not deserialize date with modified constructor, unsupported by environment');
+                            }
+                        }
+                    }
+                    else if (value[0] === 'regexp') {
+                        console.log(value[3]);
+                        let lastSlashPosition = value[3].lastIndexOf('/');
+                        let pattern = value[3].substring(1, lastSlashPosition);
+                        let flags = value[3].substring(lastSlashPosition + 1);
+                        originalValue = new RegExp(pattern, flags);
+                        if (value[1] !== 'RegExp') {
+                            if (Object.setPrototypeOf) {
+                                Object.setPrototypeOf(originalValue, definition[0]);
+                            }
+                            else if (originalValue.__proto__) {
+                                originalValue.__proto__ = RegExp.prototype;
+                            }
+                            else {
+                                throw new TypeError('Could not deserialize RegExp with modified constructor, unsupported by environment');
                             }
                         }
                     }

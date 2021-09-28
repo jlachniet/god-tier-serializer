@@ -127,6 +127,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ BigInt64Array
      ❌ BigUint64Array
    📝 Date
+   📝 RegExp
    ❌ Function
    ❌ BigInt Object
    ❌ Boolean Object
@@ -142,7 +143,6 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ SyntaxError
      ❌ TypeError
      ❌ URIError
-   ❌ RegExp
    ❌ Map
    ❌ Set
    ❌ WeakMap

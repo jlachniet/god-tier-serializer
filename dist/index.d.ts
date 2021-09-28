@@ -35,7 +35,11 @@ declare type PrototypeDefinition = [
 /**
  * A value structured for serialization.
  */
-declare type GTAny = GTUndefined | GTNull | GTBigInt | GTBoolean | GTNumber | GTString | GTObject | GTArray | GTDate;
+declare type GTAny = GTUndefined | GTNull | GTBigInt | GTBoolean | GTNumber | GTString | GTObject;
+/**
+ * An object structured for serialization.
+ */
+declare type GTObject = GTStandardObject | GTArray | GTDate | GTRegExp;
 /**
  * Undefined structured for serialization.
  */
@@ -107,9 +111,9 @@ declare type GTString = [
     value: string
 ];
 /**
- * An object structured for serialization.
+ * A standard object structured for serialization.
  */
-declare type GTObject = [
+declare type GTStandardObject = [
     /**
      * The type of the value.
      */
@@ -162,7 +166,28 @@ declare type GTDate = [
     internalValue: number
 ];
 /**
- * A property of a {@link GTObject}.
+ * A RegExp structured for serialization.
+ */
+declare type GTRegExp = [
+    /**
+     * The type of the value.
+     */
+    type: 'regexp',
+    /**
+     * The name of the prototype.
+     */
+    prototypeName: string,
+    /**
+     * The properties of the RegExp.
+     */
+    properties: GTProperty[],
+    /**
+     * The internal value of the RegExp.
+     */
+    internalValue: string
+];
+/**
+ * A property of a {@link GTStandardObject}.
  */
 declare type GTProperty = [
     /**

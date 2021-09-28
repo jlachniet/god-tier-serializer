@@ -44,9 +44,12 @@ type GTAny =
 	| GTBoolean
 	| GTNumber
 	| GTString
-	| GTObject
-	| GTArray
-	| GTDate;
+	| GTObject;
+
+/**
+ * An object structured for serialization.
+ */
+type GTObject = GTStandardObject | GTArray | GTDate | GTRegExp;
 
 /**
  * Undefined structured for serialization.
@@ -125,9 +128,9 @@ type GTString = [
 ];
 
 /**
- * An object structured for serialization.
+ * A standard object structured for serialization.
  */
-type GTObject = [
+type GTStandardObject = [
 	/**
 	 * The type of the value.
 	 */
@@ -183,7 +186,29 @@ type GTDate = [
 ];
 
 /**
- * A property of a {@link GTObject}.
+ * A RegExp structured for serialization.
+ */
+type GTRegExp = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'regexp',
+	/**
+	 * The name of the prototype.
+	 */
+	prototypeName: string,
+	/**
+	 * The properties of the RegExp.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The internal value of the RegExp.
+	 */
+	internalValue: string
+];
+
+/**
+ * A property of a {@link GTStandardObject}.
  */
 type GTProperty = [
 	/**
@@ -219,6 +244,7 @@ var GodTierSerializer = (function () {
 		[Object.prototype, 'Object'],
 		[Array.prototype, 'Array'],
 		[Date.prototype, 'Date'],
+		[RegExp.prototype, 'RegExp'],
 	];
 
 	/**
@@ -579,13 +605,13 @@ var GodTierSerializer = (function () {
 			}
 
 			// Create the corresponding GTObject.
-			var mapped: GTObject | GTArray | GTDate;
+			var mapped: GTObject;
 			if (definition) {
-				switch (Object.prototype.toString.call(object)) {
-					case '[object Array]':
+				switch (Object.prototype.toString.call(object).slice(8, -1)) {
+					case 'Array':
 						mapped = ['array', definition[1], []] as GTArray;
 						break;
-					case '[object Date]':
+					case 'Date':
 						mapped = [
 							'date',
 							definition[1],
@@ -593,8 +619,16 @@ var GodTierSerializer = (function () {
 							Date.prototype.valueOf.call(object) as number,
 						] as GTDate;
 						break;
+					case 'RegExp':
+						mapped = [
+							'regexp',
+							definition[1],
+							[],
+							RegExp.prototype.toString.call(object) as string,
+						] as GTRegExp;
+						break;
 					default:
-						mapped = ['object', definition[1], []] as GTObject;
+						mapped = ['object', definition[1], []] as GTStandardObject;
 				}
 			} else {
 				// When config.forceSerialization is enabled, objects without a
@@ -698,6 +732,23 @@ var GodTierSerializer = (function () {
 							} else {
 								throw new TypeError(
 									'Could not deserialize date with modified constructor, unsupported by environment'
+								);
+							}
+						}
+					} else if (value[0] === 'regexp') {
+						let lastSlashPosition = value[3].lastIndexOf('/');
+						let pattern = value[3].substring(1, lastSlashPosition);
+						let flags = value[3].substring(lastSlashPosition + 1);
+
+						originalValue = new RegExp(pattern, flags);
+						if (value[1] !== 'RegExp') {
+							if (Object.setPrototypeOf) {
+								Object.setPrototypeOf(originalValue, definition[0]);
+							} else if ((originalValue as any).__proto__) {
+								(originalValue as any).__proto__ = RegExp.prototype;
+							} else {
+								throw new TypeError(
+									'Could not deserialize RegExp with modified constructor, unsupported by environment'
 								);
 							}
 						}
