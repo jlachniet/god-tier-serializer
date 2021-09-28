@@ -108,6 +108,14 @@ var GodTierSerializer = (function () {
         return true;
     }
     /**
+     * Checks whether a {@link GTAny} is a {@link GTObject}.
+     * @param value The GTAny.
+     * @returns Whether the GTAny is a GTObject.
+     */
+    function isGTObject(value) {
+        return value[0].charAt(0) === value[0].charAt(0).toUpperCase();
+    }
+    /**
      * Gets a prototype definition by prototype.
      * @param prototype The prototype.
      * @returns The definition.
@@ -447,10 +455,7 @@ var GodTierSerializer = (function () {
             }
         });
         mappedValues.forEach(function (value, index) {
-            if (value[0] == 'Object' ||
-                value[0] == 'Array' ||
-                value[0] == 'Date' ||
-                value[0] == 'RegExp') {
+            if (isGTObject(value)) {
                 value[2].forEach(function (property) {
                     Object.defineProperty(originalValues[index], originalValues[property[0]], {
                         value: originalValues[property[1]],
