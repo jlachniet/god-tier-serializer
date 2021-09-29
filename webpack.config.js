@@ -22,7 +22,7 @@ module.exports = {
 	plugins: [
 		new BannerPlugin({
 			banner:
-				'god-tier-serializer 0.1.0 | MIT License | https://github.com/jlachniet/god-tier-serializer',
+				'god-tier-serializer 0.2.0 | MIT License | https://github.com/jlachniet/god-tier-serializer',
 		}),
 	],
 	optimization: {
