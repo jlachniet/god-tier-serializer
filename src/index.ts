@@ -1,3 +1,6 @@
+import { arrayFind, objectIs } from './polyfills';
+import { safeIndexOf, safeTypeOf, validateTypes } from './utils';
+
 /**
  * A god-tier-serializer configuration object.
  */
@@ -268,108 +271,6 @@ var prototypeDefinitions: PrototypeDefinition[] = [
 	[RegExp.prototype, 'RegExp'],
 	[String.prototype, 'String'],
 ];
-
-/**
- * Polyfill for {@link Array.prototype.find}, gets the first element in an
- * array that satisfies a given condition.
- * @param array The array.
- * @param callback The function to call for each element.
- * @returns The element.
- * @internal
- */
-function arrayFind<T>(
-	array: T[],
-	callback: (element: T, index: number, array: T[]) => boolean
-): T | undefined {
-	for (var i = 0; i < array.length; i++) {
-		if (callback(array[i], i, array)) {
-			return array[i];
-		}
-	}
-}
-
-/**
- * Polyfill for {@link Object.is}, checks whether two values are the same.
- * @param value1 The first value.
- * @param value2 The second value.
- * @returns Whether the values are the same.
- * @internal
- */
-function objectIs(value1: any, value2: any): boolean {
-	if (value1 === value2) {
-		if (value1 !== 0) {
-			return true;
-		} else {
-			return 1 / value1 === 1 / value2;
-		}
-	}
-	return value1 !== value1 && value2 !== value2;
-}
-
-/**
- * Gets the index of an element in an array and compares elements using
- * {@link objectIs} to support -0 and NaN correctly.
- * @param array The array.
- * @param value The value.
- * @returns
- * @internal
- */
-function safeIndexOf(array: any[], value: any): number {
-	for (var i = 0; i < array.length; i++) {
-		if (objectIs(array[i], value)) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-/**
- * Gets the type of a value as a string and handles null correctly.
- * @param value The value.
- * @returns The type.
- * @internal
- */
-function safeTypeOf(value: any) {
-	return value === null ? 'null' : typeof value;
-}
-
-/**
- * Checks whether a set of arguments are the correct types.
- * @param args The arguments.
- * @param types The types.
- * @returns Whether the arguments are the correct types.
- * @internal
- * ```ts
- * validateTypes(['a', 3], ['string', 'boolean']); // false
- * validateTypes(['a', 3], ['string', ['boolean', 'number']]); //true
- * ```
- */
-function validateTypes(args: any, types: (string | string[])[]) {
-	// For each argument, validate it against the type or types.
-	for (var i = 0; i < args.length; i++) {
-		if (Array.isArray(types[i])) {
-			// If multiple types are provided, check if the argument matches
-			// any of them.
-			var matched = false;
-			for (var j = 0; j < types[i].length; j++) {
-				if (safeTypeOf(args[i]) === types[i][j]) {
-					matched = true;
-				}
-			}
-			if (!matched) {
-				// If none of the types provided match, fail the validation.
-				return false;
-			}
-		} else {
-			if (safeTypeOf(args[i]) !== types[i]) {
-				// If the type doesn't match, fail the validation.
-				return false;
-			}
-		}
-	}
-	// If all arguments are of the correct type, pass validation.
-	return true;
-}
 
 /**
  * Checks whether a {@link GTAny} is a {@link GTObject}.

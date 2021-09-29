@@ -33,5 +33,6 @@ module.exports = {
 		],
 	},
 	mode: 'production',
+	resolve: { extensions: ['.ts'] },
 	target: ['web', 'es5'],
 };
