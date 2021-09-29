@@ -1,264 +1,24 @@
-import { arrayFind, objectIs } from './polyfills';
+import { arrayFind } from './polyfills';
+import {
+	GTAny,
+	GTArray,
+	GTBigInt,
+	GTBoolean,
+	GTConfig,
+	GTDate,
+	GTNull,
+	GTNumber,
+	GTObject,
+	GTRegExp,
+	GTStandardObject,
+	GTString,
+	GTStringObject,
+	GTUndefined,
+	PrototypeDefinition,
+} from './types';
 import { safeIndexOf, safeTypeOf, validateTypes } from './utils';
 
-/**
- * A god-tier-serializer configuration object.
- */
-interface GTConfig {
-	/**
-	 * Whether to force {@link serialize} to serialize values even if their
-	 * prototype is unregistered. If the serializer encounters a prototype that
-	 * it doesn't recognize, it will serialize it using Object.prototype as the
-	 * prototype.
-	 *
-	 * ***Do not enable this unless you know what you're doing!***
-	 */
-	forceSerialization: boolean;
-	/**
-	 * Whether to infer prototype names automatically.
-	 *
-	 * ***Do not enable this unless you know what you're doing!***
-	 */
-	inferPrototypeNames: boolean;
-}
-
-/**
- * A definition for a prototype consisting of a prototype and a name.
- * @internal
- */
-type PrototypeDefinition = [
-	/**
-	 * The prototype.
-	 */
-	prototype: object | null,
-	/**
-	 * The name of the prototype.
-	 */
-	name: string
-];
-
-/**
- * A value structured for serialization.
- */
-type GTAny =
-	| GTUndefined
-	| GTNull
-	| GTBigInt
-	| GTBoolean
-	| GTNumber
-	| GTString
-	| GTObject;
-
-/**
- * An object structured for serialization.
- */
-type GTObject = GTStandardObject | GTArray | GTDate | GTRegExp | GTStringObject;
-
-/**
- * Undefined structured for serialization.
- */
-type GTUndefined = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'undefined'
-];
-
-/**
- * Null structured for serialization.
- */
-type GTNull = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'null'
-];
-
-/**
- * A BigInt structured for serialization.
- */
-type GTBigInt = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'bigint',
-	/**
-	 * The value as a string.
-	 */
-	asString: string
-];
-
-/**
- * A boolean structured for serialization.
- */
-type GTBoolean = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'boolean',
-	/**
-	 * The value.
-	 */
-	value: boolean
-];
-
-/**
- * A number structured for serialization.
- */
-type GTNumber = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'number',
-	/**
-	 * The value as a string.
-	 */
-	asString: string
-];
-
-/**
- * A string structured for serialization.
- */
-type GTString = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'string',
-	/**
-	 * The value.
-	 */
-	value: string
-];
-
-/**
- * A standard object structured for serialization.
- */
-type GTStandardObject = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Object',
-	/**
-	 * The name of the prototype.
-	 */
-	prototypeName: string,
-	/**
-	 * The properties of the object.
-	 */
-	properties: GTProperty[]
-];
-
-/**
- * An array structured for serialization.
- */
-type GTArray = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Array',
-	/**
-	 * The name of the prototype.
-	 */
-	prototypeName: string,
-	/**
-	 * The properties of the array.
-	 */
-	properties: GTProperty[]
-];
-
-/**
- * A date structured for serialization.
- */
-type GTDate = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Date',
-	/**
-	 * The name of the prototype.
-	 */
-	prototypeName: string,
-	/**
-	 * The properties of the date.
-	 */
-	properties: GTProperty[],
-	/**
-	 * The internal value of the date.
-	 */
-	internalValue: number
-];
-
-/**
- * A RegExp structured for serialization.
- */
-type GTRegExp = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'RegExp',
-	/**
-	 * The name of the prototype.
-	 */
-	prototypeName: string,
-	/**
-	 * The properties of the RegExp.
-	 */
-	properties: GTProperty[],
-	/**
-	 * The internal value of the RegExp.
-	 */
-	internalValue: string
-];
-
-/**
- * A string object structured for serialization.
- */
-type GTStringObject = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'String',
-	/**
-	 * The name of the prototype.
-	 */
-	prototypeName: string,
-	/**
-	 * The properties of the string object.
-	 */
-	properties: GTProperty[],
-	/**
-	 * The internal value of the string object.
-	 */
-	internalValue: string
-];
-
-/**
- * A property of a {@link GTStandardObject}.
- */
-type GTProperty = [
-	/**
-	 * The index of the key.
-	 */
-	keyIndex: number,
-	/**
-	 * The index of the value.
-	 */
-	valueIndex: number,
-	/**
-	 * Whether the property can be configured.
-	 */
-	configurable: boolean,
-	/**
-	 * Whether the property can be enumerated.
-	 */
-	enumerable: boolean,
-	/**
-	 * Whether the property can be overwritten.
-	 */
-	writable: boolean
-];
-
-var config: GTConfig = {
+export var config: GTConfig = {
 	forceSerialization: false,
 	inferPrototypeNames: false,
 };
@@ -278,7 +38,7 @@ var prototypeDefinitions: PrototypeDefinition[] = [
  * @returns Whether the GTAny is a GTObject.
  */
 function isGTObject(value: GTAny): value is GTObject {
-	return value[0].charAt(0) === value[0].charAt(0).toUpperCase();
+	return value.length >= 3;
 }
 
 /**
