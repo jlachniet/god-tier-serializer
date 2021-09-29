@@ -404,6 +404,7 @@ export function deserialize(string: string): unknown {
 			default:
 				var definition = getDefinitionByName((value as GTObject)[1])!;
 				var originalValue: any;
+				var isStandardObject = false;
 
 				switch (value[0]) {
 					case 'Array':
@@ -423,10 +424,11 @@ export function deserialize(string: string): unknown {
 						originalValue = new String(value[3]);
 						break;
 					default:
-						originalValues.push(Object.create(definition[0]));
+						originalValue = Object.create(definition[0]);
+						isStandardObject = true;
 				}
 
-				if (value[0] !== value[1]) {
+				if (!isStandardObject && value[0] !== value[1]) {
 					if (Object.setPrototypeOf) {
 						Object.setPrototypeOf(originalValue, definition[0]);
 					} else if ((originalValue as any).__proto__) {
