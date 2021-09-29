@@ -13,7 +13,7 @@ In JavaScript, you often need to store a variable for later, like in local stora
 If your variable is a [supported](#supported-types) built-in, all you have to do it call `serialize` and `deserialize`.
 
 ```js
-const { register, serialize, deserialize } = require('god-tier-serializer');
+const { serialize, deserialize } = require('god-tier-serializer');
 
 // 1) Declare a variable
 let author = {
