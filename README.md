@@ -130,7 +130,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    📝 RegExp
    ❌ Function
    ❌ BigInt Object
-   ❌ Boolean Object
+   📝 Boolean Object
    ❌ Number Object
    📝 String Object
    ❌ Symbol Object

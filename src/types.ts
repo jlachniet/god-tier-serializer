@@ -54,6 +54,7 @@ export type GTObject =
 	| GTArray
 	| GTDate
 	| GTRegExp
+	| GTBooleanObject
 	| GTStringObject;
 
 /**
@@ -210,6 +211,28 @@ export type GTRegExp = [
 	 * The internal value of the RegExp.
 	 */
 	internalValue: string
+];
+
+/**
+ * A boolean object structured for serialization.
+ */
+export type GTBooleanObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Boolean',
+	/**
+	 * The name of the prototype.
+	 */
+	prototypeName: string,
+	/**
+	 * The properties of the boolean object.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The internal value of the boolean object.
+	 */
+	internalValue: boolean
 ];
 
 /**

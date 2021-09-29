@@ -4,6 +4,7 @@ import {
 	GTArray,
 	GTBigInt,
 	GTBoolean,
+	GTBooleanObject,
 	GTConfig,
 	GTDate,
 	GTNull,
@@ -29,6 +30,7 @@ var prototypeDefinitions: PrototypeDefinition[] = [
 	[Array.prototype, 'Array'],
 	[Date.prototype, 'Date'],
 	[RegExp.prototype, 'RegExp'],
+	[Boolean.prototype, 'Boolean'],
 	[String.prototype, 'String'],
 ];
 
@@ -315,6 +317,14 @@ export function serialize(value: any) {
 						RegExp.prototype.toString.call(object) as string,
 					] as GTRegExp;
 					break;
+				case 'Boolean':
+					mapped = [
+						'Boolean',
+						definition[1],
+						[],
+						Boolean.prototype.valueOf.call(object) as boolean,
+					] as GTBooleanObject;
+					break;
 				case 'String':
 					mapped = [
 						'String',
@@ -419,6 +429,9 @@ export function deserialize(string: string): unknown {
 						var flags = value[3].substring(lastSlashPosition + 1);
 
 						originalValue = new RegExp(pattern, flags);
+						break;
+					case 'Boolean':
+						originalValue = new Boolean(value[3]);
 						break;
 					case 'String':
 						originalValue = new String(value[3]);
