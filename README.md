@@ -145,8 +145,6 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ URIError
    ❌ Map
    ❌ Set
-   ❌ WeakMap
-   ❌ WeakSet
    ❌ ArrayBuffer
    ❌ SharedArrayBuffer
    ❌ DataView
