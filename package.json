@@ -13,12 +13,16 @@
 	"bugs": "https://github.com/jlachniet/god-tier-serializer/issues",
 	"license": "MIT",
 	"author": "Julian Lachniet",
-	"files": [],
+	"files": [
+		"dist",
+		"CHANGELOG.md",
+		"yarn.lock"
+	],
 	"main": "dist/index.js",
 	"repository": "https://github.com/jlachniet/god-tier-serializer",
 	"scripts": {
 		"build": "webpack",
-		"test": "webpack & node test.js"
+		"test": "webpack && node test.js"
 	},
 	"devDependencies": {
 		"@types/node": "^16.10.1",
