@@ -15,31 +15,18 @@ If your variable is a [supported](#supported-types) built-in, all you have to do
 ```js
 const { serialize, deserialize } = require('god-tier-serializer');
 
-// 1) Declare a variable
 let author = {
 	name: 'Julian Lachniet',
-	age: 19,
+	gender: 'male',
 };
-
-// 2) Serialize it
 let authorSerialized = serialize(author);
-
-// 3) Deserialize it
 let author2 = deserialize(authorSerialized);
 
 console.log(author);
-// {
-//    name: 'Julian Lachniet',
-//    age: 19
-// }
 console.log(author2);
-// {
-//    name: 'Julian Lachniet',
-//    age: 19
-// }
 ```
 
-If your variable is an object with a custom prototype (like an instance of a class), then just register the prototype first.
+If your variable has a custom prototype (like an instance of a class), then just register the prototype first.
 
 ```js
 const { register, serialize } = require('god-tier-serializer');
@@ -51,7 +38,7 @@ let author = new Person();
 let authorSerialized = serialize(author);
 ```
 
-Nested object are supported, just keep in mind that properties of an object with a custom prototype also have to be registered.
+Nested object are supported, but keep in mind that nested objects with custom prototypes also have to be registered.
 
 ```js
 const { register, serialize } = require('god-tier-serializer');
@@ -62,31 +49,22 @@ register(Person.prototype);
 let projectInfo = {
 	author: new Person(),
 };
-
 let projectInfoSerialized = serialize(projectInfo);
-// Even though projectInfo is just a regular object, Person.prototype must still be registered beforehand.
 ```
 
 ## Configuration:
 
 ```ts
-interface GTConfig: {
-	/**
-	 * Whether to force {@link serialize} to serialize values even if their
-	 * prototype is unregistered. If the serializer encounters a prototype that
-	 * it doesn't recognize, it will serialize it using Object.prototype as the
-	 * prototype.
-	 *
-	 * ***Do not enable this unless you know what you're doing!***
-	 */
-	forceSerialization: boolean;
-	/**
-	 * Whether to infer prototype names automatically.
-	 *
-	 * ***Do not enable this unless you know what you're doing!***
-	 */
-	inferPrototypeNames: boolean;
-}
+const { config } = require('god-tier-serializer');
+
+/**
+ * Whether to try to infer a prototype's identifer when possible.
+ */
+config.inferIdentifiers = false;
+/**
+ * Whether to serialize unregistered prototypes.
+ */
+config.serializePrototypes = false;
 ```
 
 ## Browser/environment support:

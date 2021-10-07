@@ -1,64 +1,23 @@
-/**
- * A god-tier-serializer configuration object.
- */
-export interface GTConfig {
-	/**
-	 * Whether to force {@link serialize} to serialize values even if their
-	 * prototype is unregistered. If the serializer encounters a prototype that
-	 * it doesn't recognize, it will serialize it using Object.prototype as the
-	 * prototype.
-	 *
-	 * ***Do not enable this unless you know what you're doing!***
-	 */
-	forceSerialization: boolean;
-	/**
-	 * Whether to infer prototype names automatically.
-	 *
-	 * ***Do not enable this unless you know what you're doing!***
-	 */
-	inferPrototypeNames: boolean;
-}
-
-/**
- * A definition for a prototype consisting of a prototype and a name.
- * @internal
- */
-export type PrototypeDefinition = [
-	/**
-	 * The prototype.
-	 */
-	prototype: object | null,
-	/**
-	 * The name of the prototype.
-	 */
-	name: string
-];
+import internal = require('stream');
 
 /**
  * A value structured for serialization.
  */
-export type GTAny =
+export type GTAny = GTPrimitive | GTObject | GTReference;
+
+/**
+ * A structured primitive.
+ */
+export type GTPrimitive =
 	| GTUndefined
 	| GTNull
-	| GTBigInt
 	| GTBoolean
 	| GTNumber
 	| GTString
-	| GTObject;
+	| GTBigInt;
 
 /**
- * An object structured for serialization.
- */
-export type GTObject =
-	| GTStandardObject
-	| GTArray
-	| GTDate
-	| GTRegExp
-	| GTBooleanObject
-	| GTStringObject;
-
-/**
- * Undefined structured for serialization.
+ * A structured undefined value.
  */
 export type GTUndefined = [
 	/**
@@ -68,7 +27,7 @@ export type GTUndefined = [
 ];
 
 /**
- * Null structured for serialization.
+ * A structured null value.
  */
 export type GTNull = [
 	/**
@@ -78,21 +37,7 @@ export type GTNull = [
 ];
 
 /**
- * A BigInt structured for serialization.
- */
-export type GTBigInt = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'bigint',
-	/**
-	 * The value as a string.
-	 */
-	asString: string
-];
-
-/**
- * A boolean structured for serialization.
+ * A structured boolean.
  */
 export type GTBoolean = [
 	/**
@@ -106,7 +51,7 @@ export type GTBoolean = [
 ];
 
 /**
- * A number structured for serialization.
+ * A structured number.
  */
 export type GTNumber = [
 	/**
@@ -116,11 +61,11 @@ export type GTNumber = [
 	/**
 	 * The value as a string.
 	 */
-	asString: string
+	valueAsString: string
 ];
 
 /**
- * A string structured for serialization.
+ * A structured string.
  */
 export type GTString = [
 	/**
@@ -134,7 +79,32 @@ export type GTString = [
 ];
 
 /**
- * A standard object structured for serialization.
+ * A structured BigInt.
+ */
+export type GTBigInt = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'bigint',
+	/**
+	 * The value as a string.
+	 */
+	valueAsString: string
+];
+
+/**
+ * A structured object.
+ */
+export type GTObject =
+	| GTStandardObject
+	| GTArray
+	| GTBooleanObject
+	| GTDate
+	| GTRegExp
+	| GTStringObject;
+
+/**
+ * A {@link GTObject} with no special properties.
  */
 export type GTStandardObject = [
 	/**
@@ -142,17 +112,17 @@ export type GTStandardObject = [
 	 */
 	type: 'Object',
 	/**
-	 * The name of the prototype.
+	 * The index of the prototype.
 	 */
-	prototypeName: string,
+	prototypeIndex: number,
 	/**
 	 * The properties of the object.
 	 */
-	properties: GTProperty[]
+	descriptors: GTDescriptor[]
 ];
 
 /**
- * An array structured for serialization.
+ * A structured array.
  */
 export type GTArray = [
 	/**
@@ -160,61 +130,17 @@ export type GTArray = [
 	 */
 	type: 'Array',
 	/**
-	 * The name of the prototype.
+	 * The index of the prototype.
 	 */
-	prototypeName: string,
+	prototypeIndex: number,
 	/**
 	 * The properties of the array.
 	 */
-	properties: GTProperty[]
+	descriptors: GTDescriptor[]
 ];
 
 /**
- * A date structured for serialization.
- */
-export type GTDate = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Date',
-	/**
-	 * The name of the prototype.
-	 */
-	prototypeName: string,
-	/**
-	 * The properties of the date.
-	 */
-	properties: GTProperty[],
-	/**
-	 * The internal value of the date.
-	 */
-	internalValue: number
-];
-
-/**
- * A RegExp structured for serialization.
- */
-export type GTRegExp = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'RegExp',
-	/**
-	 * The name of the prototype.
-	 */
-	prototypeName: string,
-	/**
-	 * The properties of the RegExp.
-	 */
-	properties: GTProperty[],
-	/**
-	 * The internal value of the RegExp.
-	 */
-	internalValue: string
-];
-
-/**
- * A boolean object structured for serialization.
+ * A structured boolean object.
  */
 export type GTBooleanObject = [
 	/**
@@ -222,13 +148,13 @@ export type GTBooleanObject = [
 	 */
 	type: 'Boolean',
 	/**
-	 * The name of the prototype.
+	 * The index of the prototype.
 	 */
-	prototypeName: string,
+	prototypeIndex: number,
 	/**
 	 * The properties of the boolean object.
 	 */
-	properties: GTProperty[],
+	descriptors: GTDescriptor[],
 	/**
 	 * The internal value of the boolean object.
 	 */
@@ -236,7 +162,51 @@ export type GTBooleanObject = [
 ];
 
 /**
- * A string object structured for serialization.
+ * A structured date.
+ */
+export type GTDate = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Date',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the date.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The internal value of the date.
+	 */
+	internalValue: number
+];
+
+/**
+ * A structured RegExp.
+ */
+export type GTRegExp = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'RegExp',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the RegExp.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The internal value of the RegExp.
+	 */
+	internalValue: string
+];
+
+/**
+ * A structured string object.
  */
 export type GTStringObject = [
 	/**
@@ -244,13 +214,13 @@ export type GTStringObject = [
 	 */
 	type: 'String',
 	/**
-	 * The name of the prototype.
+	 * The index of the prototype.
 	 */
-	prototypeName: string,
+	prototypeIndex: number,
 	/**
 	 * The properties of the string object.
 	 */
-	properties: GTProperty[],
+	descriptors: GTDescriptor[],
 	/**
 	 * The internal value of the string object.
 	 */
@@ -258,9 +228,9 @@ export type GTStringObject = [
 ];
 
 /**
- * A property of a {@link GTStandardObject}.
+ * A descriptor for a property of a {@link GTObject}.
  */
-export type GTProperty = [
+export type GTDescriptor = [
 	/**
 	 * The index of the key.
 	 */
@@ -270,15 +240,29 @@ export type GTProperty = [
 	 */
 	valueIndex: number,
 	/**
-	 * Whether the property can be configured.
+	 * Whether the property is configurable.
 	 */
 	configurable: boolean,
 	/**
-	 * Whether the property can be enumerated.
+	 * Whether the property is enumerable.
 	 */
 	enumerable: boolean,
 	/**
-	 * Whether the property can be overwritten.
+	 * Whether the property is writable.
 	 */
 	writable: boolean
+];
+
+/**
+ * A reference to an external object.
+ */
+export type GTReference = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'reference',
+	/**
+	 * The identifier of the object.
+	 */
+	identifier: string
 ];
