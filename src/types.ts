@@ -96,6 +96,7 @@ export type GTBigInt = [
 export type GTObject =
 	| GTStandardObject
 	| GTArray
+	| GTBigIntObject
 	| GTBooleanObject
 	| GTDate
 	| GTNumberObject
@@ -136,6 +137,28 @@ export type GTArray = [
 	 * The properties of the array.
 	 */
 	descriptors: GTDescriptor[]
+];
+
+/**
+ * A structured BigInt object.
+ */
+export type GTBigIntObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'BigInt',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the BigInt object.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The internal value of the BigInt object as a string.
+	 */
+	internalValueAsString: string
 ];
 
 /**

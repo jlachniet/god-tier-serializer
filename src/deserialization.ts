@@ -79,6 +79,9 @@ export function deserialize(string: string): unknown {
 					case 'Array':
 						originalValues[index] = new Array();
 						break;
+					case 'BigInt':
+						originalValues[index] = new Object(BigInt(mappedValue[3]));
+						break;
 					case 'Boolean':
 						originalValues[index] = new Boolean(mappedValue[3]);
 						break;

@@ -170,6 +170,14 @@ export function serialize(value: any) {
 				case 'Array':
 					mappedObj = ['Array', 0, []];
 					break;
+				case 'BigInt':
+					mappedObj = [
+						'BigInt',
+						0,
+						[],
+						String(BigInt.prototype.valueOf.call(object)),
+					];
+					break;
 				case 'Boolean':
 					mappedObj = [
 						'Boolean',

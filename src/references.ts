@@ -22,6 +22,7 @@ type ObjectDefinition = [
 export const definitions: ObjectDefinition[] = [
 	[Object.prototype, 'Object'],
 	[Array.prototype, 'Array'],
+	[BigInt.prototype, 'BigInt'],
 	[Boolean.prototype, 'Boolean'],
 	[Date.prototype, 'Date'],
 	[Number.prototype, 'Number'],

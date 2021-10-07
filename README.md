@@ -110,10 +110,10 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    📝 Boolean Object
    📝 Number Object
    📝 String Object
+   📝 BigInt Object
    📝 GeneratorFunction
    📝 AsyncFunction
    📝 AsyncGeneratorFunction
-   ❌ BigInt Object
    ❌ Symbol Object
    ❌ Error
      ❌ AggregateError
