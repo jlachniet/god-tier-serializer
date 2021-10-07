@@ -17,8 +17,8 @@ export function serialize(value: any) {
 	// To serialize a value, it must converted to an array of GTAny values.
 	// Create a list of known values consisting of regular values, and an array
 	// of mapped values consisting of the equivalent GTAny values.
-	var knownValues: any[] = [];
-	var mappedValues: GTAny[] = [];
+	const knownValues: any[] = [];
+	const mappedValues: GTAny[] = [];
 
 	// Call the main function which adds a value to the known values, maps it,
 	// and adds the mapped value to the mapped values. This function will call
@@ -146,10 +146,10 @@ export function serialize(value: any) {
 		// Add the object to the known values and record its position so it can
 		// be returned later.
 		knownValues.push(object);
-		var position = knownValues.length - 1;
+		const position = knownValues.length - 1;
 
 		// Check if there is a corresponding definition for the object.
-		var definition = getDefinitionByObject(object);
+		const definition = getDefinitionByObject(object);
 
 		if (definition) {
 			// If there is a definition, return a GTReference with the
@@ -159,7 +159,7 @@ export function serialize(value: any) {
 			// Create a GTObject and add it to the mapped values. The GTObject
 			// will have its properties set later, for now it just needs to
 			// reserve a position in the mapped values.
-			var mappedObj: GTObject;
+			let mappedObj: GTObject;
 
 			switch (objectTypeOf(object)) {
 				case 'Array':
@@ -201,10 +201,10 @@ export function serialize(value: any) {
 			}
 			mappedObj[1] = mapValue(Object.getPrototypeOf(object));
 
-			Object.getOwnPropertyNames(object).forEach(function (name) {
+			Object.getOwnPropertyNames(object).forEach((name) => {
 				// For each property on the object, get the descriptor and add a
 				// GTProperty to the GTObject based on it.
-				var descriptor = Object.getOwnPropertyDescriptor(object, name)!;
+				const descriptor = Object.getOwnPropertyDescriptor(object, name)!;
 				mappedObj[2].push([
 					mapValue(name),
 					mapValue(descriptor.value),

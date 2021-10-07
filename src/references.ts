@@ -16,7 +16,7 @@ type ObjectDefinition = [
 	identifier: string
 ];
 
-export var definitions: ObjectDefinition[] = [
+export const definitions: ObjectDefinition[] = [
 	[Object.prototype, 'Object'],
 	[Array.prototype, 'Array'],
 	[Boolean.prototype, 'Boolean'],
@@ -68,22 +68,14 @@ export function register(object: object, identifier?: string) {
 	identifier = '@' + identifier;
 
 	// Check if the object is already registered.
-	if (
-		arrayFind(definitions, function (definition) {
-			return definition[0] === object;
-		})
-	) {
+	if (arrayFind(definitions, (definition) => definition[0] === object)) {
 		throw new Error(
 			'register called with an object that is already registered'
 		);
 	}
 
 	// Check if the identifier is already registered.
-	if (
-		arrayFind(definitions, function (definition) {
-			return definition[1] === identifier;
-		})
-	) {
+	if (arrayFind(definitions, (definition) => definition[1] === identifier)) {
 		throw new Error(
 			'register called with an identifier that is already registered'
 		);

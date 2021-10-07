@@ -6,14 +6,14 @@
  * @returns The first element in the array that satisfies the condition.
  * @internal
  * ```ts
- * arrayFind([1, 2, 3], function (element) {return element == 2}) // 2
+ * arrayFind([1, 2, 3], (element) => element == 2) // 2
  * ```
  */
 export function arrayFind<T>(
 	array: T[],
 	callback: (element: T, index: number, array: T[]) => boolean
 ) {
-	for (var i = 0; i < array.length; i++) {
+	for (let i = 0; i < array.length; i++) {
 		if (callback(array[i], i, array)) {
 			return array[i];
 		}

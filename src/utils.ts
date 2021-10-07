@@ -16,7 +16,7 @@ import { GTAny, GTObject } from './types';
  * ```
  */
 export function safeIndexOf(array: any[], element: any) {
-	for (var i = 0; i < array.length; i++) {
+	for (let i = 0; i < array.length; i++) {
 		if (objectIs(array[i], element)) {
 			return i;
 		}
@@ -80,9 +80,7 @@ export function objectTypeOf(object: object) {
  * ```
  */
 export function getDefinitionByIdentifier(identifier: string) {
-	return arrayFind(definitions, function (definition) {
-		return identifier === definition[1];
-	});
+	return arrayFind(definitions, (definition) => identifier === definition[1]);
 }
 
 /**
@@ -95,9 +93,7 @@ export function getDefinitionByIdentifier(identifier: string) {
  * ```
  */
 export function getDefinitionByObject(object: object) {
-	return arrayFind(definitions, function (definition) {
-		return object === definition[0];
-	});
+	return arrayFind(definitions, (definition) => object === definition[0]);
 }
 
 /**

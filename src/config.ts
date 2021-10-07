@@ -1,6 +1,6 @@
 import { safeTypeOf } from './utils';
 
-export var config = {
+export const config = {
 	get inferIdentifiers() {
 		return _inferIdentifiers;
 	},
@@ -29,5 +29,5 @@ export var config = {
 	},
 };
 
-var _inferIdentifiers = false;
-var _serializePrototypes = false;
+let _inferIdentifiers = false;
+let _serializePrototypes = false;

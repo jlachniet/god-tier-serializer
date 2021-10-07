@@ -18,10 +18,10 @@ export function deserialize(string: string): unknown {
 
 	// Create arrays of mapped values (as parsed from the provided JSON) and
 	// original values (regular JS values).
-	var mappedValues = JSON.parse(string) as GTAny[];
-	var originalValues: any[] = [];
+	const mappedValues = JSON.parse(string) as GTAny[];
+	const originalValues: any[] = [];
 
-	for (var i = 0; i < mappedValues.length; i++) {
+	for (let i = 0; i < mappedValues.length; i++) {
 		// For each GTAny, pass the index to the unmap function.
 		unmapValue(i);
 	}
@@ -40,7 +40,7 @@ export function deserialize(string: string): unknown {
 		}
 
 		// Get the mapped value.
-		var mappedValue = mappedValues[index];
+		const mappedValue = mappedValues[index];
 
 		switch (mappedValue[0]) {
 			// If the mapped value is a GTPrimitive, convert to a native
@@ -70,7 +70,7 @@ export function deserialize(string: string): unknown {
 				break;
 			default:
 				unmapValue(mappedValue[1]);
-				var isStandardObject = false;
+				let isStandardObject = false;
 
 				// If none of the above apply, then the value is a GTObject.
 				// Unmap the prototype and then create a native object from the
@@ -86,9 +86,9 @@ export function deserialize(string: string): unknown {
 						originalValues[index] = new Date(mappedValue[3]);
 						break;
 					case 'RegExp':
-						var lastSlashPosition = mappedValue[3].lastIndexOf('/');
-						var pattern = mappedValue[3].substring(1, lastSlashPosition);
-						var flags = mappedValue[3].substring(lastSlashPosition + 1);
+						const lastSlashPosition = mappedValue[3].lastIndexOf('/');
+						const pattern = mappedValue[3].substring(1, lastSlashPosition);
+						const flags = mappedValue[3].substring(lastSlashPosition + 1);
 
 						originalValues[index] = new RegExp(pattern, flags);
 						break;
@@ -102,17 +102,17 @@ export function deserialize(string: string): unknown {
 						isStandardObject = true;
 				}
 
-				var proto = mappedValues[mappedValue[1]];
+				const proto = mappedValues[mappedValue[1]];
 				if (proto[0] !== 'reference' || proto[1] !== mappedValue[0]) {
 					setPrototypeOf(originalValues[index], originalValues[mappedValue[1]]);
 				}
 		}
 	}
 
-	mappedValues.forEach(function (value, index) {
+	mappedValues.forEach((value, index) => {
 		if (isGTObject(value)) {
 			// For each GTObject, convert the GTDescriptors into native descriptors.
-			value[2].forEach(function (descriptor) {
+			value[2].forEach((descriptor) => {
 				Object.defineProperty(
 					originalValues[index],
 					originalValues[descriptor[0]],
