@@ -1,8 +1,8 @@
 import { config } from './config';
-import { objectIs } from './polyfills';
 import { GTAny, GTObject } from './types';
 import {
 	getDefinitionByObject,
+	numberToString,
 	objectTypeOf,
 	safeIndexOf,
 	safeTypeOf,
@@ -108,7 +108,7 @@ export function serialize(value: any) {
 	 */
 	function mapNumber(number: number) {
 		knownValues.push(number);
-		mappedValues.push(['number', objectIs(number, -0) ? '-0' : String(number)]);
+		mappedValues.push(['number', numberToString(number)]);
 		return knownValues.length - 1;
 	}
 
@@ -175,6 +175,14 @@ export function serialize(value: any) {
 					break;
 				case 'Date':
 					mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
+					break;
+				case 'Number':
+					mappedObj = [
+						'Number',
+						0,
+						[],
+						numberToString(Number.prototype.valueOf.call(object)),
+					];
 					break;
 				case 'RegExp':
 					mappedObj = ['RegExp', 0, [], RegExp.prototype.toString.call(object)];

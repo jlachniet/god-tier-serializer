@@ -109,7 +109,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    ❌ Function
    ❌ BigInt Object
    📝 Boolean Object
-   ❌ Number Object
+   📝 Number Object
    📝 String Object
    ❌ Symbol Object
    ❌ Error

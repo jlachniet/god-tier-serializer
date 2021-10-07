@@ -98,6 +98,7 @@ export type GTObject =
 	| GTArray
 	| GTBooleanObject
 	| GTDate
+	| GTNumberObject
 	| GTRegExp
 	| GTStringObject;
 
@@ -179,6 +180,28 @@ export type GTDate = [
 	 * The internal value of the date.
 	 */
 	internalValue: number
+];
+
+/**
+ * A structured number object.
+ */
+export type GTNumberObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Number',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the number object.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The internal value of the number object as a string.
+	 */
+	internalValueAsString: string
 ];
 
 /**

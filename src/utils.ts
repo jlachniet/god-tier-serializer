@@ -110,3 +110,18 @@ export function isGTObject(value: GTAny): value is GTObject {
 	// more elements.
 	return value.length > 2;
 }
+
+/**
+ * Converts a number to a string
+ *
+ * Similar to {@link Number.prototype.toString}, but handles -0 correctly.
+ * @param number The number.
+ * @returns The number as a string.
+ * @internal
+ * ```ts
+ * numberToString(3) // '3'
+ * ```
+ */
+export function numberToString(number: number) {
+	return objectIs(number, -0) ? '-0' : String(number);
+}
