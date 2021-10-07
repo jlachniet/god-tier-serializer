@@ -107,10 +107,13 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    📝 Date
    📝 RegExp
    📝 Function
-   ❌ BigInt Object
    📝 Boolean Object
    📝 Number Object
    📝 String Object
+   📝 GeneratorFunction
+   📝 AsyncFunction
+   📝 AsyncGeneratorFunction
+   ❌ BigInt Object
    ❌ Symbol Object
    ❌ Error
      ❌ AggregateError
@@ -128,10 +131,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    ❌ DataView
    ❌ Promise
    ❌ Generator
-   📝 GeneratorFunction
-   📝 AsyncFunction
    ❌ AsyncGenerator
-   📝 AsyncGeneratorFunction
    ❌ Proxy
    ❌ Intl.Collator
    ❌ Intl.DateTimeFormat
