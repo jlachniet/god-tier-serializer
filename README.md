@@ -106,7 +106,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ BigUint64Array
    📝 Date
    📝 RegExp
-   ❌ Function
+   📝 Function
    ❌ BigInt Object
    📝 Boolean Object
    📝 Number Object
