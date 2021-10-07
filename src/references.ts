@@ -1,6 +1,9 @@
 import { config } from '.';
-import { arrayFind } from './polyfills';
-import { safeTypeOf } from './utils';
+import {
+	getDefinitionByIdentifier,
+	getDefinitionByObject,
+	safeTypeOf,
+} from './utils';
 
 /**
  * A definition consisting of an object and an identifier.
@@ -68,14 +71,14 @@ export function register(object: object, identifier?: string) {
 	identifier = '@' + identifier;
 
 	// Check if the object is already registered.
-	if (arrayFind(definitions, (definition) => definition[0] === object)) {
+	if (getDefinitionByObject(object)) {
 		throw new Error(
 			'register called with an object that is already registered'
 		);
 	}
 
 	// Check if the identifier is already registered.
-	if (arrayFind(definitions, (definition) => definition[1] === identifier)) {
+	if (getDefinitionByIdentifier(identifier)) {
 		throw new Error(
 			'register called with an identifier that is already registered'
 		);

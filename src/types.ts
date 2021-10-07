@@ -1,5 +1,3 @@
-import internal = require('stream');
-
 /**
  * A value structured for serialization.
  */
