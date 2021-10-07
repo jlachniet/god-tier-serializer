@@ -176,6 +176,8 @@ export function serialize(value: any) {
 				case 'Date':
 					mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
 					break;
+				case 'Function':
+					throw new Error('Could not serialize unregistered function');
 				case 'Number':
 					mappedObj = [
 						'Number',
