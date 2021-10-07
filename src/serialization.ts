@@ -162,6 +162,11 @@ export function serialize(value: any) {
 			let mappedObj: GTObject;
 
 			switch (objectTypeOf(object)) {
+				case 'AsyncFunction':
+				case 'AsyncGeneratorFunction':
+				case 'Function':
+				case 'GeneratorFunction':
+					throw new Error('Could not serialize unregistered function');
 				case 'Array':
 					mappedObj = ['Array', 0, []];
 					break;
@@ -176,8 +181,6 @@ export function serialize(value: any) {
 				case 'Date':
 					mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
 					break;
-				case 'Function':
-					throw new Error('Could not serialize unregistered function');
 				case 'Number':
 					mappedObj = [
 						'Number',

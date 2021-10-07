@@ -128,10 +128,10 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    ❌ DataView
    ❌ Promise
    ❌ Generator
-   ❌ GeneratorFunction
-   ❌ AsyncFunction
+   📝 GeneratorFunction
+   📝 AsyncFunction
    ❌ AsyncGenerator
-   ❌ AsyncGeneratorFunction
+   📝 AsyncGeneratorFunction
    ❌ Proxy
    ❌ Intl.Collator
    ❌ Intl.DateTimeFormat
