@@ -125,7 +125,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ TypeError
      ❌ URIError
    ❌ Map
-   ❌ Set
+   📝 Set
    ❌ ArrayBuffer
    ❌ SharedArrayBuffer
    ❌ DataView

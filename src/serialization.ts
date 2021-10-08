@@ -1,5 +1,5 @@
 import { config } from './config';
-import { GTAny, GTObject } from './types';
+import { GTAny, GTObject, GTSet } from './types';
 import {
 	getDefinitionByObject,
 	numberToString,
@@ -237,6 +237,9 @@ export function serialize(value: any) {
 				case 'BigUint64Array':
 					mappedObj = structureTypedArray(object, BigUint64Array);
 					break;
+				case 'Set':
+					mappedObj = ['Set', 0, [], []];
+					break;
 				default:
 					mappedObj = ['Object', 0, []];
 			}
@@ -267,6 +270,12 @@ export function serialize(value: any) {
 					descriptor.writable!,
 				]);
 			});
+
+			if (mappedObj[0] === 'Set') {
+				Set.prototype.forEach.call(object, (value) => {
+					(mappedObj as GTSet)[3].push(mapValue(value));
+				});
+			}
 		}
 
 		// Return the position at which the object was added.

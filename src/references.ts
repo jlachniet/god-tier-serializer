@@ -38,6 +38,7 @@ export const definitions: ObjectDefinition[] = [
 	[BigUint64Array.prototype, 'BigUint64Array'],
 	[Number.prototype, 'Number'],
 	[RegExp.prototype, 'RegExp'],
+	[Set.prototype, 'Set'],
 	[String.prototype, 'String'],
 ];
 

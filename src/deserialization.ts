@@ -131,6 +131,9 @@ export function deserialize(string: string): unknown {
 					case 'String':
 						originalValues[index] = new String(mappedValue[3]);
 						break;
+					case 'Set':
+						originalValues[index] = new Set();
+						break;
 					default:
 						originalValues[index] = Object.create(
 							originalValues[mappedValue[1]]
@@ -160,6 +163,12 @@ export function deserialize(string: string): unknown {
 					}
 				);
 			});
+
+			if (value[0] === 'Set') {
+				value[3].forEach((nestedIndex) => {
+					originalValues[index].add(originalValues[nestedIndex]);
+				});
+			}
 		}
 	});
 

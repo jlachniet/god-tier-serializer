@@ -99,10 +99,11 @@ export type GTObject =
 	| GTBigIntObject
 	| GTBooleanObject
 	| GTDate
-	| GTTypedArray
 	| GTNumberObject
 	| GTRegExp
-	| GTStringObject;
+	| GTStringObject
+	| GTTypedArray
+	| GTSet;
 
 /**
  * A {@link GTObject} with no special properties.
@@ -303,6 +304,28 @@ export type GTStringObject = [
 	 * The internal value of the string object.
 	 */
 	internalValue: string
+];
+
+/**
+ * A structured set.
+ */
+export type GTSet = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Set',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the set.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The indexes of the internal values of the set.
+	 */
+	internalValueIndexes: number[]
 ];
 
 /**
