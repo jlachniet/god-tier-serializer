@@ -280,20 +280,21 @@ export function serialize(value: any) {
 					'Could not serialize value with unregistered prototype, register the prototype or set config.serializePrototypes to true'
 				);
 			}
-			mappedObj[1] = mapValue(Object.getPrototypeOf(object));
 
-			Object.getOwnPropertyNames(object).forEach((name) => {
-				// For each property on the object, get the descriptor and add a
-				// GTProperty to the GTObject based on it.
-				const descriptor = Object.getOwnPropertyDescriptor(object, name)!;
-				mappedObj[2].push([
-					mapValue(name),
-					mapValue(descriptor.value),
-					descriptor.configurable!,
-					descriptor.enumerable!,
-					descriptor.writable!,
-				]);
-			});
+			(Object.getOwnPropertyNames(object) as (string | symbol)[])
+				.concat(Object.getOwnPropertySymbols(object))
+				.forEach((key) => {
+					// For each property on the object, get the descriptor and add a
+					// GTProperty to the GTObject based on it.
+					const descriptor = Object.getOwnPropertyDescriptor(object, key)!;
+					mappedObj[2].push([
+						mapValue(key),
+						mapValue(descriptor.value),
+						descriptor.configurable!,
+						descriptor.enumerable!,
+						descriptor.writable!,
+					]);
+				});
 
 			if (mappedObj[0] === 'Map') {
 				Map.prototype.forEach.call(object, (key, value) => {
