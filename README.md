@@ -130,8 +130,6 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    ❌ SharedArrayBuffer
    ❌ DataView
    ❌ Promise
-   ❌ Generator
-   ❌ AsyncGenerator
    ❌ Proxy
    ❌ Intl.Collator
    ❌ Intl.DateTimeFormat
