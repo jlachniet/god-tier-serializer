@@ -99,6 +99,7 @@ export type GTObject =
 	| GTBigIntObject
 	| GTBooleanObject
 	| GTDate
+	| GTMap
 	| GTNumberObject
 	| GTRegExp
 	| GTStringObject
@@ -304,6 +305,28 @@ export type GTStringObject = [
 	 * The internal value of the string object.
 	 */
 	internalValue: string
+];
+
+/**
+ * A structured map.
+ */
+export type GTMap = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Map',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the map.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The indexes of the internal key-value pairs of the map.
+	 */
+	internalValueIndexes: [number, number][]
 ];
 
 /**

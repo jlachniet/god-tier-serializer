@@ -131,6 +131,9 @@ export function deserialize(string: string): unknown {
 					case 'String':
 						originalValues[index] = new String(mappedValue[3]);
 						break;
+					case 'Map':
+						originalValues[index] = new Map();
+						break;
 					case 'Set':
 						originalValues[index] = new Set();
 						break;
@@ -164,9 +167,18 @@ export function deserialize(string: string): unknown {
 				);
 			});
 
+			if (value[0] === 'Map') {
+				value[3].forEach((keyValueIndex) => {
+					originalValues[index].set(
+						originalValues[keyValueIndex[0]],
+						originalValues[keyValueIndex[1]]
+					);
+				});
+			}
+
 			if (value[0] === 'Set') {
-				value[3].forEach((nestedIndex) => {
-					originalValues[index].add(originalValues[nestedIndex]);
+				value[3].forEach((valueIndex) => {
+					originalValues[index].add(originalValues[valueIndex]);
 				});
 			}
 		}

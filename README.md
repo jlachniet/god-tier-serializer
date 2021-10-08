@@ -111,6 +111,8 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    📝 Number Object
    📝 String Object
    📝 BigInt Object
+   📝 Map
+   📝 Set
    📝 GeneratorFunction
    📝 AsyncFunction
    📝 AsyncGeneratorFunction
@@ -124,8 +126,6 @@ Since **god-tier-serializer** is still in development, not every built-in type i
      ❌ SyntaxError
      ❌ TypeError
      ❌ URIError
-   ❌ Map
-   📝 Set
    ❌ ArrayBuffer
    ❌ SharedArrayBuffer
    ❌ DataView

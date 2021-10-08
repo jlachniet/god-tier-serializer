@@ -36,6 +36,7 @@ export const definitions: ObjectDefinition[] = [
 	[Float64Array.prototype, 'Float64Array'],
 	[BigInt64Array.prototype, 'BigInt64Array'],
 	[BigUint64Array.prototype, 'BigUint64Array'],
+	[Map.prototype, 'Map'],
 	[Number.prototype, 'Number'],
 	[RegExp.prototype, 'RegExp'],
 	[Set.prototype, 'Set'],
