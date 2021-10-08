@@ -152,4 +152,4 @@ Since **god-tier-serializer** is still in development, not every built-in type i
 
 ## License
 
-**god-tier-serializer** is released under the MIT License. For more information, please [LICENSE](https://github.com/jlachniet/god-tier-serializer/blob/main/LICENSE).
+**god-tier-serializer** is released under the MIT License. For more information, please see [LICENSE](https://github.com/jlachniet/god-tier-serializer/blob/main/LICENSE).
