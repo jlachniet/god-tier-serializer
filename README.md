@@ -32,7 +32,7 @@ If your variable has a custom prototype (like an instance of a class), then just
 const { register, serialize } = require('god-tier-serializer');
 
 class Person {}
-register(Person.prototype);
+register(Person.prototype, 'Person');
 
 let author = new Person();
 let authorSerialized = serialize(author);
@@ -44,7 +44,7 @@ Nested object are supported, but keep in mind that nested objects with custom pr
 const { register, serialize } = require('god-tier-serializer');
 
 class Person {}
-register(Person.prototype);
+register(Person.prototype, 'Person');
 
 let projectInfo = {
 	author: new Person(),
