@@ -106,9 +106,7 @@ export function getDefinitionByObject(object: object) {
  * ```
  */
 export function isGTObject(value: GTAny): value is GTObject {
-	// GTPrimitive values all have 1 or 2 elements, and GTObjects all have 3 or
-	// more elements.
-	return value.length > 2;
+	return value[0] !== 'symbol' && value.length > 2;
 }
 
 /**

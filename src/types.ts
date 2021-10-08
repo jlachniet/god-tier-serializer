@@ -12,7 +12,8 @@ export type GTPrimitive =
 	| GTBoolean
 	| GTNumber
 	| GTString
-	| GTBigInt;
+	| GTBigInt
+	| GTSymbol;
 
 /**
  * A structured undefined value.
@@ -88,6 +89,24 @@ export type GTBigInt = [
 	 * The value as a string.
 	 */
 	valueAsString: string
+];
+
+/**
+ * A structured symbol.
+ */
+export type GTSymbol = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'symbol',
+	/**
+	 * The description of the symbol.
+	 */
+	description: string,
+	/**
+	 * The symbol's key, if it has one.
+	 */
+	key?: string
 ];
 
 /**

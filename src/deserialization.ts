@@ -63,6 +63,13 @@ export function deserialize(string: string): unknown {
 			case 'bigint':
 				originalValues[index] = BigInt(mappedValue[1]);
 				break;
+			case 'symbol':
+				if (mappedValue[2] === undefined) {
+					originalValues[index] = Symbol(mappedValue[1]);
+				} else {
+					originalValues[index] = Symbol.for(mappedValue[1]);
+				}
+				break;
 			case 'reference':
 				// If the mapped value is a reference, get the definition and
 				// add the corresponding object.

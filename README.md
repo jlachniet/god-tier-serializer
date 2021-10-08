@@ -88,6 +88,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
 ✔️ Boolean
 ✔️ Number
 ✔️ String
+✔️ Symbol
 📝 Object
    📝 Object with prototype null
    📝 Object with prototype Object.prototype
@@ -145,7 +146,6 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    ❌ WebAssembly.CompileError
    ❌ WebAssembly.LinkError
    ❌ WebAssembly.RuntimeError
-❌ Symbol
 ```
 
 ## License

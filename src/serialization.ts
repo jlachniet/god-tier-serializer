@@ -58,6 +58,8 @@ export function serialize(value: any) {
 				return mapString(value);
 			case 'bigint':
 				return mapBigInt(value);
+			case 'symbol':
+				return mapSymbol(value);
 			case 'object':
 				return mapObject(value);
 			default:
@@ -134,6 +136,25 @@ export function serialize(value: any) {
 	function mapBigInt(bigint: BigInt) {
 		knownValues.push(bigint);
 		mappedValues.push(['bigint', String(bigint)]);
+		return knownValues.length - 1;
+	}
+
+	/**
+	 * Adds a symbol to the known and mapped values.
+	 * @param symbol The symbol.
+	 * @returns The index at which the symbol was added.
+	 * @internal
+	 */
+	function mapSymbol(symbol: symbol) {
+		knownValues.push(symbol);
+
+		const description = String(symbol).substring(7, String(symbol).length - 1);
+		if (Symbol.keyFor(symbol) === undefined) {
+			mappedValues.push(['symbol', description]);
+		} else {
+			mappedValues.push(['symbol', description, Symbol.keyFor(symbol)]);
+		}
+
 		return knownValues.length - 1;
 	}
 
