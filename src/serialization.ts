@@ -6,6 +6,7 @@ import {
 	objectTypeOf,
 	safeIndexOf,
 	safeTypeOf,
+	structureTypedArray,
 } from './utils';
 
 /**
@@ -204,14 +205,37 @@ export function serialize(value: any) {
 					mappedObj = ['Array', 0, []];
 					break;
 				case 'Int8Array':
-					mappedObj = [
-						'Int8Array',
-						0,
-						[],
-						// Hack to deal with the object.length property being modified.
-						// Not sure if there is a better way to do this.
-						Int8Array.prototype.toString.call(object).split(',').length,
-					];
+					mappedObj = structureTypedArray(object, Int8Array);
+					break;
+				case 'Uint8Array':
+					mappedObj = structureTypedArray(object, Uint8Array);
+					break;
+				case 'Uint8ClampedArray':
+					mappedObj = structureTypedArray(object, Uint8ClampedArray);
+					break;
+				case 'Int16Array':
+					mappedObj = structureTypedArray(object, Int16Array);
+					break;
+				case 'Uint16Array':
+					mappedObj = structureTypedArray(object, Uint16Array);
+					break;
+				case 'Int32Array':
+					mappedObj = structureTypedArray(object, Int32Array);
+					break;
+				case 'Uint32Array':
+					mappedObj = structureTypedArray(object, Uint32Array);
+					break;
+				case 'Float32Array':
+					mappedObj = structureTypedArray(object, Float32Array);
+					break;
+				case 'Float64Array':
+					mappedObj = structureTypedArray(object, Float64Array);
+					break;
+				case 'BigInt64Array':
+					mappedObj = structureTypedArray(object, BigInt64Array);
+					break;
+				case 'BigUint64Array':
+					mappedObj = structureTypedArray(object, BigUint64Array);
 					break;
 				default:
 					mappedObj = ['Object', 0, []];

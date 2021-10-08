@@ -82,6 +82,36 @@ export function deserialize(string: string): unknown {
 					case 'Int8Array':
 						originalValues[index] = new Int8Array(mappedValue[3]);
 						break;
+					case 'Uint8Array':
+						originalValues[index] = new Uint8Array(mappedValue[3]);
+						break;
+					case 'Uint8ClampedArray':
+						originalValues[index] = new Uint8ClampedArray(mappedValue[3]);
+						break;
+					case 'Int16Array':
+						originalValues[index] = new Int16Array(mappedValue[3]);
+						break;
+					case 'Uint16Array':
+						originalValues[index] = new Uint16Array(mappedValue[3]);
+						break;
+					case 'Int32Array':
+						originalValues[index] = new Int32Array(mappedValue[3]);
+						break;
+					case 'Uint32Array':
+						originalValues[index] = new Uint32Array(mappedValue[3]);
+						break;
+					case 'Float32Array':
+						originalValues[index] = new Float32Array(mappedValue[3]);
+						break;
+					case 'Float64Array':
+						originalValues[index] = new Float64Array(mappedValue[3]);
+						break;
+					case 'BigInt64Array':
+						originalValues[index] = new BigInt64Array(mappedValue[3]);
+						break;
+					case 'BigUint64Array':
+						originalValues[index] = new BigUint64Array(mappedValue[3]);
+						break;
 					case 'BigInt':
 						originalValues[index] = new Object(BigInt(mappedValue[3]));
 						break;

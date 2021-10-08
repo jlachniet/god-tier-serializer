@@ -99,7 +99,7 @@ export type GTObject =
 	| GTBigIntObject
 	| GTBooleanObject
 	| GTDate
-	| GTInt8Array
+	| GTTypedArray
 	| GTNumberObject
 	| GTRegExp
 	| GTStringObject;
@@ -207,23 +207,34 @@ export type GTDate = [
 ];
 
 /**
- * A structured Int8Array.
+ * A structured TypedArray.
  */
-export type GTInt8Array = [
+export type GTTypedArray = [
 	/**
 	 * The type of the value.
 	 */
-	type: 'Int8Array',
+	type:
+		| 'Int8Array'
+		| 'Uint8Array'
+		| 'Uint8ClampedArray'
+		| 'Int16Array'
+		| 'Uint16Array'
+		| 'Int32Array'
+		| 'Uint32Array'
+		| 'Float32Array'
+		| 'Float64Array'
+		| 'BigInt64Array'
+		| 'BigUint64Array',
 	/**
 	 * The index of the prototype.
 	 */
 	prototypeIndex: number,
 	/**
-	 * The properties of the Int8Array.
+	 * The properties of the TypedArray.
 	 */
 	descriptors: GTDescriptor[],
 	/**
-	 * The length of the Int8Array.
+	 * The length of the TypedArray.
 	 */
 	length: number
 ];

@@ -1,6 +1,6 @@
 import { arrayFind, objectIs } from './polyfills';
 import { definitions } from './references';
-import { GTAny, GTObject } from './types';
+import { GTAny, GTObject, GTTypedArray } from './types';
 
 /**
  * Gets the index of an element in an array.
@@ -124,4 +124,16 @@ export function isGTObject(value: GTAny): value is GTObject {
  */
 export function numberToString(number: number) {
 	return objectIs(number, -0) ? '-0' : String(number);
+}
+
+export function structureTypedArray(
+	typedArray: object,
+	constructor: any
+): GTTypedArray {
+	return [
+		constructor.name,
+		0,
+		[],
+		constructor.prototype.toString.call(typedArray).split(',').length,
+	];
 }

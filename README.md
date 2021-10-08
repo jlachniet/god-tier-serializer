@@ -94,16 +94,16 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    📝 Object with custom prototype
    📝 Array
      📝 Int8Array
-     ❌ Uint8Array
-     ❌ Uint8ClampedArray
-     ❌ Int16Array
-     ❌ Uint16Array
-     ❌ Int32Array
-     ❌ Uint32Array
-     ❌ Float32Array
-     ❌ Float64Array
-     ❌ BigInt64Array
-     ❌ BigUint64Array
+     📝 Uint8Array
+     📝 Uint8ClampedArray
+     📝 Int16Array
+     📝 Uint16Array
+     📝 Int32Array
+     📝 Uint32Array
+     📝 Float32Array
+     📝 Float64Array
+     📝 BigInt64Array
+     📝 BigUint64Array
    📝 Date
    📝 RegExp
    📝 Function
