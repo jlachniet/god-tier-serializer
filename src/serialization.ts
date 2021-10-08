@@ -167,9 +167,6 @@ export function serialize(value: any) {
 				case 'Function':
 				case 'GeneratorFunction':
 					throw new Error('Could not serialize unregistered function');
-				case 'Array':
-					mappedObj = ['Array', 0, []];
-					break;
 				case 'BigInt':
 					mappedObj = [
 						'BigInt',
@@ -203,9 +200,21 @@ export function serialize(value: any) {
 				case 'String':
 					mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
 					break;
+				case 'Array':
+					mappedObj = ['Array', 0, []];
+					break;
+				case 'Int8Array':
+					mappedObj = [
+						'Int8Array',
+						0,
+						[],
+						// Hack to deal with the object.length property being modified.
+						// Not sure if there is a better way to do this.
+						Int8Array.prototype.toString.call(object).split(',').length,
+					];
+					break;
 				default:
 					mappedObj = ['Object', 0, []];
-					break;
 			}
 
 			mappedValues.push(mappedObj);

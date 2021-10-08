@@ -63,7 +63,7 @@ export function safeTypeOf(value: any) {
  * @returns The native type of the object.
  * @internal
  * ```ts
- * objectTypeOf([]) // 'array'
+ * objectTypeOf([]) // 'Array'
  * ```
  */
 export function objectTypeOf(object: object) {

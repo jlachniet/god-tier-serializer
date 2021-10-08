@@ -99,6 +99,7 @@ export type GTObject =
 	| GTBigIntObject
 	| GTBooleanObject
 	| GTDate
+	| GTInt8Array
 	| GTNumberObject
 	| GTRegExp
 	| GTStringObject;
@@ -203,6 +204,28 @@ export type GTDate = [
 	 * The internal value of the date.
 	 */
 	internalValue: number
+];
+
+/**
+ * A structured Int8Array.
+ */
+export type GTInt8Array = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Int8Array',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the Int8Array.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The length of the Int8Array.
+	 */
+	length: number
 ];
 
 /**

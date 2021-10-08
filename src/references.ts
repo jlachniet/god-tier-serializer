@@ -25,6 +25,7 @@ export const definitions: ObjectDefinition[] = [
 	[BigInt.prototype, 'BigInt'],
 	[Boolean.prototype, 'Boolean'],
 	[Date.prototype, 'Date'],
+	[Int8Array.prototype, 'Int8Array'],
 	[Number.prototype, 'Number'],
 	[RegExp.prototype, 'RegExp'],
 	[String.prototype, 'String'],

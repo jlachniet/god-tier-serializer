@@ -93,7 +93,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    📝 Object with prototype Object.prototype
    📝 Object with custom prototype
    📝 Array
-     ❌ Int8Array
+     📝 Int8Array
      ❌ Uint8Array
      ❌ Uint8ClampedArray
      ❌ Int16Array
