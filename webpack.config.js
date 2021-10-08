@@ -21,8 +21,7 @@ module.exports = {
 	},
 	plugins: [
 		new BannerPlugin({
-			banner:
-				'god-tier-serializer 0.3.0 | MIT License | https://github.com/jlachniet/god-tier-serializer',
+			banner: `god-tier-serializer ${process.env.npm_package_version} | MIT License | https://github.com/jlachniet/god-tier-serializer`,
 		}),
 	],
 	optimization: {
