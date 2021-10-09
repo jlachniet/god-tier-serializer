@@ -41,6 +41,7 @@ export const definitions: ValueDefinition[] = [
 	[RegExp.prototype, 'RegExp'],
 	[Set.prototype, 'Set'],
 	[String.prototype, 'String'],
+	[Symbol.prototype, 'Symbol'],
 ];
 
 /**

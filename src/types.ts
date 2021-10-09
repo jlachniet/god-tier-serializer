@@ -123,7 +123,8 @@ export type GTObject =
 	| GTRegExp
 	| GTStringObject
 	| GTTypedArray
-	| GTSet;
+	| GTSet
+	| GTSymbolObject;
 
 /**
  * A {@link GTObject} with no special properties.
@@ -368,6 +369,32 @@ export type GTSet = [
 	 * The indexes of the internal values of the set.
 	 */
 	internalValueIndexes: number[]
+];
+
+/**
+ * A structured symbol object.
+ */
+export type GTSymbolObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Symbol',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the symbol object.
+	 */
+	descriptors: GTDescriptor[],
+	/**
+	 * The description of the internal value.
+	 */
+	internalValueDescription: string,
+	/**
+	 * The key of the internal value, if it has one.
+	 */
+	internalValueKey?: string
 ];
 
 export type GTDescriptor = GTDataDescriptor | GTAccessorDescriptor;

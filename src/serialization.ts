@@ -155,8 +155,6 @@ export function serialize(value: any) {
 	function mapSymbol(symbol: symbol) {
 		knownValues.push(symbol);
 
-		const definition = getDefinitionByValue(symbol);
-
 		const description = String(symbol).substring(7, String(symbol).length - 1);
 		if (Symbol.keyFor(symbol) === undefined) {
 			mappedValues.push(['symbol', description]);
@@ -217,6 +215,19 @@ export function serialize(value: any) {
 				break;
 			case 'String':
 				mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
+				break;
+			case 'Symbol':
+				const symbol = Symbol.prototype.valueOf.call(object);
+				const description = String(symbol).substring(
+					7,
+					String(symbol).length - 1
+				);
+
+				if (Symbol.keyFor(symbol) === undefined) {
+					mappedObj = ['Symbol', 0, [], description];
+				} else {
+					mappedObj = ['Symbol', 0, [], description, Symbol.keyFor(symbol)];
+				}
 				break;
 			case 'Array':
 				mappedObj = ['Array', 0, []];

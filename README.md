@@ -117,7 +117,7 @@ Since **god-tier-serializer** is still in development, not every built-in type i
    📝 GeneratorFunction
    📝 AsyncFunction
    📝 AsyncGeneratorFunction
-   ❌ Symbol Object
+   📝 Symbol Object
    ❌ Error
      ❌ AggregateError
      ❌ EvalError

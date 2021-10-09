@@ -149,6 +149,13 @@ export function deserialize(string: string): unknown {
 					case 'Set':
 						originalValues[index] = new Set();
 						break;
+					case 'Symbol':
+						if (mappedValue[4] === undefined) {
+							originalValues[index] = new Object(Symbol(mappedValue[3]));
+						} else {
+							originalValues[index] = new Object(Symbol.for(mappedValue[3]));
+						}
+						break;
 					default:
 						originalValues[index] = Object.create(
 							originalValues[mappedValue[1]]
