@@ -1,7 +1,7 @@
 import { config } from './config';
 import { GTAny, GTMap, GTObject, GTSet } from './types';
 import {
-	getDefinitionByUnique,
+	getDefinitionByValue,
 	numberToString,
 	objectTypeOf,
 	safeIndexOf,
@@ -41,6 +41,13 @@ export function serialize(value: any) {
 		if (safeIndexOf(knownValues, value) > -1) {
 			// If the value is already mapped, return the index of the value.
 			return safeIndexOf(knownValues, value);
+		}
+
+		const definition = getDefinitionByValue(value);
+		if (definition) {
+			knownValues.push(value);
+			mappedValues.push(['reference', definition[1]]);
+			return knownValues.length - 1;
 		}
 
 		// Call the appropriate function to map the value depending on the type
@@ -148,22 +155,13 @@ export function serialize(value: any) {
 	function mapSymbol(symbol: symbol) {
 		knownValues.push(symbol);
 
-		const definition = getDefinitionByUnique(symbol);
+		const definition = getDefinitionByValue(symbol);
 
-		if (definition) {
-			// If there is a definition, return a GTReference with the
-			// identifier.
-			mappedValues.push(['reference', definition[1]]);
+		const description = String(symbol).substring(7, String(symbol).length - 1);
+		if (Symbol.keyFor(symbol) === undefined) {
+			mappedValues.push(['symbol', description]);
 		} else {
-			const description = String(symbol).substring(
-				7,
-				String(symbol).length - 1
-			);
-			if (Symbol.keyFor(symbol) === undefined) {
-				mappedValues.push(['symbol', description]);
-			} else {
-				mappedValues.push(['symbol', description, Symbol.keyFor(symbol)]);
-			}
+			mappedValues.push(['symbol', description, Symbol.keyFor(symbol)]);
 		}
 
 		return knownValues.length - 1;
@@ -181,154 +179,140 @@ export function serialize(value: any) {
 		knownValues.push(object);
 		const position = knownValues.length - 1;
 
-		// Check if there is a corresponding definition for the object.
-		const definition = getDefinitionByUnique(object);
+		// Create a GTObject and add it to the mapped values. The GTObject
+		// will have its properties set later, for now it just needs to
+		// reserve a position in the mapped values.
+		let mappedObj: GTObject;
 
-		if (definition) {
-			// If there is a definition, return a GTReference with the
-			// identifier.
-			mappedValues.push(['reference', definition[1]]);
-		} else {
-			// Create a GTObject and add it to the mapped values. The GTObject
-			// will have its properties set later, for now it just needs to
-			// reserve a position in the mapped values.
-			let mappedObj: GTObject;
+		switch (objectTypeOf(object)) {
+			case 'AsyncFunction':
+			case 'AsyncGeneratorFunction':
+			case 'Function':
+			case 'GeneratorFunction':
+				throw new Error('Could not serialize unregistered function');
+			case 'BigInt':
+				mappedObj = [
+					'BigInt',
+					0,
+					[],
+					String(BigInt.prototype.valueOf.call(object)),
+				];
+				break;
+			case 'Boolean':
+				mappedObj = ['Boolean', 0, [], Boolean.prototype.valueOf.call(object)];
+				break;
+			case 'Date':
+				mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
+				break;
+			case 'Number':
+				mappedObj = [
+					'Number',
+					0,
+					[],
+					numberToString(Number.prototype.valueOf.call(object)),
+				];
+				break;
+			case 'RegExp':
+				mappedObj = ['RegExp', 0, [], RegExp.prototype.toString.call(object)];
+				break;
+			case 'String':
+				mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
+				break;
+			case 'Array':
+				mappedObj = ['Array', 0, []];
+				break;
+			case 'Int8Array':
+				mappedObj = structureTypedArray(object, Int8Array);
+				break;
+			case 'Uint8Array':
+				mappedObj = structureTypedArray(object, Uint8Array);
+				break;
+			case 'Uint8ClampedArray':
+				mappedObj = structureTypedArray(object, Uint8ClampedArray);
+				break;
+			case 'Int16Array':
+				mappedObj = structureTypedArray(object, Int16Array);
+				break;
+			case 'Uint16Array':
+				mappedObj = structureTypedArray(object, Uint16Array);
+				break;
+			case 'Int32Array':
+				mappedObj = structureTypedArray(object, Int32Array);
+				break;
+			case 'Uint32Array':
+				mappedObj = structureTypedArray(object, Uint32Array);
+				break;
+			case 'Float32Array':
+				mappedObj = structureTypedArray(object, Float32Array);
+				break;
+			case 'Float64Array':
+				mappedObj = structureTypedArray(object, Float64Array);
+				break;
+			case 'BigInt64Array':
+				mappedObj = structureTypedArray(object, BigInt64Array);
+				break;
+			case 'BigUint64Array':
+				mappedObj = structureTypedArray(object, BigUint64Array);
+				break;
+			case 'Map':
+				mappedObj = ['Map', 0, [], []];
+				break;
+			case 'Set':
+				mappedObj = ['Set', 0, [], []];
+				break;
+			default:
+				mappedObj = ['Object', 0, []];
+		}
 
-			switch (objectTypeOf(object)) {
-				case 'AsyncFunction':
-				case 'AsyncGeneratorFunction':
-				case 'Function':
-				case 'GeneratorFunction':
-					throw new Error('Could not serialize unregistered function');
-				case 'BigInt':
-					mappedObj = [
-						'BigInt',
-						0,
-						[],
-						String(BigInt.prototype.valueOf.call(object)),
-					];
-					break;
-				case 'Boolean':
-					mappedObj = [
-						'Boolean',
-						0,
-						[],
-						Boolean.prototype.valueOf.call(object),
-					];
-					break;
-				case 'Date':
-					mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
-					break;
-				case 'Number':
-					mappedObj = [
-						'Number',
-						0,
-						[],
-						numberToString(Number.prototype.valueOf.call(object)),
-					];
-					break;
-				case 'RegExp':
-					mappedObj = ['RegExp', 0, [], RegExp.prototype.toString.call(object)];
-					break;
-				case 'String':
-					mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
-					break;
-				case 'Array':
-					mappedObj = ['Array', 0, []];
-					break;
-				case 'Int8Array':
-					mappedObj = structureTypedArray(object, Int8Array);
-					break;
-				case 'Uint8Array':
-					mappedObj = structureTypedArray(object, Uint8Array);
-					break;
-				case 'Uint8ClampedArray':
-					mappedObj = structureTypedArray(object, Uint8ClampedArray);
-					break;
-				case 'Int16Array':
-					mappedObj = structureTypedArray(object, Int16Array);
-					break;
-				case 'Uint16Array':
-					mappedObj = structureTypedArray(object, Uint16Array);
-					break;
-				case 'Int32Array':
-					mappedObj = structureTypedArray(object, Int32Array);
-					break;
-				case 'Uint32Array':
-					mappedObj = structureTypedArray(object, Uint32Array);
-					break;
-				case 'Float32Array':
-					mappedObj = structureTypedArray(object, Float32Array);
-					break;
-				case 'Float64Array':
-					mappedObj = structureTypedArray(object, Float64Array);
-					break;
-				case 'BigInt64Array':
-					mappedObj = structureTypedArray(object, BigInt64Array);
-					break;
-				case 'BigUint64Array':
-					mappedObj = structureTypedArray(object, BigUint64Array);
-					break;
-				case 'Map':
-					mappedObj = ['Map', 0, [], []];
-					break;
-				case 'Set':
-					mappedObj = ['Set', 0, [], []];
-					break;
-				default:
-					mappedObj = ['Object', 0, []];
-			}
+		mappedValues.push(mappedObj);
 
-			mappedValues.push(mappedObj);
+		// Map the object's prototype and set the index.
+		if (
+			Object.getPrototypeOf(object) !== null &&
+			!getDefinitionByValue(Object.getPrototypeOf(object)) &&
+			!config.serializePrototypes
+		) {
+			throw new Error(
+				'Could not serialize value with unregistered prototype, register the prototype or set config.serializePrototypes to true'
+			);
+		}
+		mappedObj[1] = mapValue(Object.getPrototypeOf(object));
 
-			// Map the object's prototype and set the index.
-			if (
-				Object.getPrototypeOf(object) !== null &&
-				!getDefinitionByUnique(Object.getPrototypeOf(object)) &&
-				!config.serializePrototypes
-			) {
-				throw new Error(
-					'Could not serialize value with unregistered prototype, register the prototype or set config.serializePrototypes to true'
-				);
-			}
-			mappedObj[1] = mapValue(Object.getPrototypeOf(object));
+		(Object.getOwnPropertyNames(object) as (string | symbol)[])
+			.concat(Object.getOwnPropertySymbols(object))
+			.forEach((key) => {
+				// For each property on the object, get the descriptor and add a
+				// GTProperty to the GTObject based on it.
+				const descriptor = Object.getOwnPropertyDescriptor(object, key)!;
+				if (descriptor.value) {
+					mappedObj[2].push([
+						mapValue(key),
+						mapValue(descriptor.value),
+						descriptor.configurable!,
+						descriptor.enumerable!,
+						descriptor.writable!,
+					]);
+				} else {
+					mappedObj[2].push([
+						mapValue(key),
+						mapValue(descriptor.get),
+						mapValue(descriptor.set),
+						descriptor.configurable!,
+						descriptor.enumerable!,
+					]);
+				}
+			});
 
-			(Object.getOwnPropertyNames(object) as (string | symbol)[])
-				.concat(Object.getOwnPropertySymbols(object))
-				.forEach((key) => {
-					// For each property on the object, get the descriptor and add a
-					// GTProperty to the GTObject based on it.
-					const descriptor = Object.getOwnPropertyDescriptor(object, key)!;
-					if (descriptor.value) {
-						mappedObj[2].push([
-							mapValue(key),
-							mapValue(descriptor.value),
-							descriptor.configurable!,
-							descriptor.enumerable!,
-							descriptor.writable!,
-						]);
-					} else {
-						mappedObj[2].push([
-							mapValue(key),
-							mapValue(descriptor.get),
-							mapValue(descriptor.set),
-							descriptor.configurable!,
-							descriptor.enumerable!,
-						]);
-					}
-				});
+		if (mappedObj[0] === 'Map') {
+			Map.prototype.forEach.call(object, (key, value) => {
+				(mappedObj as GTMap)[3].push([mapValue(key), mapValue(value)]);
+			});
+		}
 
-			if (mappedObj[0] === 'Map') {
-				Map.prototype.forEach.call(object, (key, value) => {
-					(mappedObj as GTMap)[3].push([mapValue(key), mapValue(value)]);
-				});
-			}
-
-			if (mappedObj[0] === 'Set') {
-				Set.prototype.forEach.call(object, (value) => {
-					(mappedObj as GTSet)[3].push(mapValue(value));
-				});
-			}
+		if (mappedObj[0] === 'Set') {
+			Set.prototype.forEach.call(object, (value) => {
+				(mappedObj as GTSet)[3].push(mapValue(value));
+			});
 		}
 
 		// Return the position at which the object was added.
