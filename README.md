@@ -9,13 +9,13 @@
 
 _Convert any value to and from a serialized string with no headache._
 
-In JavaScript, you often need to store a variable for later, like in local storage or in a file. This means that you need your variable as a string. If your data is simple, then this conversion isn't too hard. But what do you do if you have a complicated data structure? **god-tier-serializer** solves this problem for you.
+In JavaScript, you often need to store a variable for later, such as in local storage or a file. This means that you need your variable as a string. If your data is simple, then this conversion isn't too hard. But what do you do if you have a complicated data structure? **god-tier-serializer** solves this problem for you.
 
-**god-tier-serializer** is better than `JSON.stringify`/`JSON.parse` and other serialization libraries because it's incredibly simple to use and supports most built-in types (including BigInts, symbols, dates, maps, sets, and typed arrays), custom prototypes, external and cyclical references, nesting, modified descriptors, and more.
+**god-tier-serializer** is better than `JSON.stringify`/`JSON.parse` and other serialization libraries because it's incredibly simple to use and supports [most built-in types](#supported-types), custom prototypes, external and cyclical references, nesting, modified descriptors, and more.
 
 ## Usage:
 
-If your variable is a [supported](#supported-types) type, all you have to do it call `serialize` and `deserialize`.
+If your variable is a [supported](#supported-types) type, all you have to do is call `serialize` and `deserialize`.
 
 ```js
 const { serialize, deserialize } = require('god-tier-serializer');
@@ -45,7 +45,7 @@ let author = new Person('Julian', 'male');
 let authorSerialized = serialize(author);
 ```
 
-Nested object are supported, just keep in mind that nested objects with custom prototypes also need to be registered.
+Nested objects are supported, just keep in mind that nested objects with custom prototypes also need to be registered.
 
 ```js
 const { register, serialize } = require('god-tier-serializer');
@@ -68,19 +68,21 @@ let projectInfoSerialized = serialize(projectInfo);
 
 ```ts
 /**
- * Serializes a value to a string.
+ * Serialize a value to a string.
  * @param value The value.
  * @returns The serialized value.
  */
 function serialize(value: any): string;
+
 /**
- * Deserializes a value from a string.
+ * Deserialize a value from a string.
  * @param string The serialized value.
  * @returns The value.
  */
 function deserialize(string: string): unknown;
+
 /**
- * Registers a value with an identifier so that it can be
+ * Register a value with an identifier so that it can be
  * referenced during serialization and retrieved during
  * deserialization.
  * @param value The object.
@@ -93,16 +95,18 @@ function register(value: any, identifier?: string): void;
 
 ```ts
 /**
- * Whether to try to infer a prototype's identifier during
- * registration when possible.
+ * This controls whether to try to infer a prototype's
+ * identifier during registration when possible.
  *
  * Enabling this may cause compatibility issues, especially
  * if your code will be minified, or if you need to support
  * legacy browsers.
  */
 config.inferIdentifiers = false;
+
 /**
- * Whether to serialize unregistered prototypes.
+ * This controls whether to serialize unregistered
+ * prototypes.
  *
  * You can safely leave this disabled unless you are
  * generating prototypes at runtime.
@@ -160,4 +164,4 @@ config.serializePrototypes = false;
 
 ## License
 
-**god-tier-serializer** is released under the MIT License. For more information, please see [LICENSE](https://github.com/jlachniet/god-tier-serializer/blob/main/LICENSE).
+**god-tier-serializer** is released under the MIT License. For more information, please see the [LICENSE](https://github.com/jlachniet/god-tier-serializer/blob/main/LICENSE).
