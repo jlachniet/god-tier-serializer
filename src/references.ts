@@ -1,25 +1,25 @@
 import { config } from '.';
 import {
 	getDefinitionByIdentifier,
-	getDefinitionByObject,
+	getDefinitionByUnique,
 	safeTypeOf,
 } from './utils';
 
 /**
- * A definition consisting of an object and an identifier.
+ * A definition consisting of a unique value and an identifier.
  */
-type ObjectDefinition = [
+type UniqueDefinition = [
 	/**
-	 * The object.
+	 * The unique value.
 	 */
-	object: object,
+	uniqueValue: object | symbol,
 	/**
 	 * The identifier.
 	 */
 	identifier: string
 ];
 
-export const definitions: ObjectDefinition[] = [
+export const definitions: UniqueDefinition[] = [
 	[Object.prototype, 'Object'],
 	[Array.prototype, 'Array'],
 	[BigInt.prototype, 'BigInt'],
@@ -46,19 +46,19 @@ export const definitions: ObjectDefinition[] = [
 /**
  * Registers an object with an identifier so that it can be referenced during
  * serialization and retrieved during deserialization.
- * @param object The object.
+ * @param unique The object.
  * @param identifier The identifier.
  */
-export function register(object: object, identifier?: string) {
+export function register(unique: object | symbol, identifier?: string) {
 	// Validate that the arguments are of the correct types.
 	if (
-		safeTypeOf(object) !== 'object' ||
+		(safeTypeOf(unique) !== 'object' && safeTypeOf(unique) !== 'symbol') ||
 		(safeTypeOf(identifier) !== 'string' &&
 			safeTypeOf(identifier) !== 'undefined')
 	) {
 		throw new TypeError(
 			'register called with invalid arguments, expected (object, string?) but got (' +
-				safeTypeOf(object) +
+				safeTypeOf(unique) +
 				', ' +
 				safeTypeOf(identifier) +
 				')'
@@ -66,14 +66,14 @@ export function register(object: object, identifier?: string) {
 	}
 
 	if (identifier === undefined) {
-		if (object.constructor && object.constructor.name) {
+		if (unique.constructor && unique.constructor.name) {
 			if (!config.inferIdentifiers) {
 				throw new TypeError(
 					'register called without an identifier, pass as identifier or set config.inferIdentifiers to true'
 				);
 			}
 
-			identifier = object.constructor.name;
+			identifier = unique.constructor.name;
 		} else {
 			throw new Error(
 				'register called without an identifier, and the identifier could not be inferred'
@@ -86,7 +86,7 @@ export function register(object: object, identifier?: string) {
 	identifier = '@' + identifier;
 
 	// Check if the object is already registered.
-	if (getDefinitionByObject(object)) {
+	if (getDefinitionByUnique(unique)) {
 		throw new Error(
 			'register called with an object that is already registered'
 		);
@@ -99,5 +99,5 @@ export function register(object: object, identifier?: string) {
 		);
 	}
 
-	definitions.push([object, identifier]);
+	definitions.push([unique, identifier]);
 }

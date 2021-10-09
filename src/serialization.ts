@@ -1,7 +1,7 @@
 import { config } from './config';
 import { GTAny, GTMap, GTObject, GTSet } from './types';
 import {
-	getDefinitionByObject,
+	getDefinitionByUnique,
 	numberToString,
 	objectTypeOf,
 	safeIndexOf,
@@ -148,11 +148,22 @@ export function serialize(value: any) {
 	function mapSymbol(symbol: symbol) {
 		knownValues.push(symbol);
 
-		const description = String(symbol).substring(7, String(symbol).length - 1);
-		if (Symbol.keyFor(symbol) === undefined) {
-			mappedValues.push(['symbol', description]);
+		const definition = getDefinitionByUnique(symbol);
+
+		if (definition) {
+			// If there is a definition, return a GTReference with the
+			// identifier.
+			mappedValues.push(['reference', definition[1]]);
 		} else {
-			mappedValues.push(['symbol', description, Symbol.keyFor(symbol)]);
+			const description = String(symbol).substring(
+				7,
+				String(symbol).length - 1
+			);
+			if (Symbol.keyFor(symbol) === undefined) {
+				mappedValues.push(['symbol', description]);
+			} else {
+				mappedValues.push(['symbol', description, Symbol.keyFor(symbol)]);
+			}
 		}
 
 		return knownValues.length - 1;
@@ -171,7 +182,7 @@ export function serialize(value: any) {
 		const position = knownValues.length - 1;
 
 		// Check if there is a corresponding definition for the object.
-		const definition = getDefinitionByObject(object);
+		const definition = getDefinitionByUnique(object);
 
 		if (definition) {
 			// If there is a definition, return a GTReference with the
@@ -273,7 +284,7 @@ export function serialize(value: any) {
 			// Map the object's prototype and set the index.
 			if (
 				Object.getPrototypeOf(object) !== null &&
-				!getDefinitionByObject(Object.getPrototypeOf(object)) &&
+				!getDefinitionByUnique(Object.getPrototypeOf(object)) &&
 				!config.serializePrototypes
 			) {
 				throw new Error(

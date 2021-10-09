@@ -91,15 +91,15 @@ export function getDefinitionByIdentifier(identifier: string) {
 
 /**
  * Gets an object definition from an object.
- * @param object The object.
+ * @param unique The object.
  * @returns The object definition.
  * @internal
  * ```ts
  * getDefinitionByObject({}) // [{}, '@Foo']
  * ```
  */
-export function getDefinitionByObject(object: object) {
-	return arrayFind(definitions, (definition) => object === definition[0]);
+export function getDefinitionByUnique(unique: object | symbol) {
+	return arrayFind(definitions, (definition) => unique === definition[0]);
 }
 
 /**
