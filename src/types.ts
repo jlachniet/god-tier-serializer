@@ -370,10 +370,12 @@ export type GTSet = [
 	internalValueIndexes: number[]
 ];
 
+export type GTDescriptor = GTDataDescriptor | GTAccessorDescriptor;
+
 /**
- * A descriptor for a property of a {@link GTObject}.
+ * A data descriptor for a property of a {@link GTObject}.
  */
-export type GTDescriptor = [
+export type GTDataDescriptor = [
 	/**
 	 * The index of the key.
 	 */
@@ -394,6 +396,32 @@ export type GTDescriptor = [
 	 * Whether the property is writable.
 	 */
 	writable: boolean
+];
+
+/**
+ * An accessor descriptor for a property of a {@link GTObject}.
+ */
+export type GTAccessorDescriptor = [
+	/**
+	 * The index of the key.
+	 */
+	keyIndex: number,
+	/**
+	 * The index of the getter.
+	 */
+	getIndex: number,
+	/**
+	 * The index of the setter.
+	 */
+	setIndex: number,
+	/**
+	 * Whether the property is configurable.
+	 */
+	configurable: boolean,
+	/**
+	 * Whether the property is enumerable.
+	 */
+	enumerable: boolean
 ];
 
 /**

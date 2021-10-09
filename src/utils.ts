@@ -1,6 +1,12 @@
 import { arrayFind, objectIs } from './polyfills';
 import { definitions } from './references';
-import { GTAny, GTObject, GTTypedArray } from './types';
+import {
+	GTAny,
+	GTDataDescriptor,
+	GTDescriptor,
+	GTObject,
+	GTTypedArray,
+} from './types';
 
 /**
  * Gets the index of an element in an array.
@@ -107,6 +113,12 @@ export function getDefinitionByObject(object: object) {
  */
 export function isGTObject(value: GTAny): value is GTObject {
 	return value[0] !== 'symbol' && value.length > 2;
+}
+
+export function isGTDataDescriptor(
+	value: GTDescriptor
+): value is GTDataDescriptor {
+	return safeTypeOf(value[2]) === 'boolean';
 }
 
 /**

@@ -280,6 +280,7 @@ export function serialize(value: any) {
 					'Could not serialize value with unregistered prototype, register the prototype or set config.serializePrototypes to true'
 				);
 			}
+			mappedObj[1] = mapValue(Object.getPrototypeOf(object));
 
 			(Object.getOwnPropertyNames(object) as (string | symbol)[])
 				.concat(Object.getOwnPropertySymbols(object))
@@ -287,13 +288,23 @@ export function serialize(value: any) {
 					// For each property on the object, get the descriptor and add a
 					// GTProperty to the GTObject based on it.
 					const descriptor = Object.getOwnPropertyDescriptor(object, key)!;
-					mappedObj[2].push([
-						mapValue(key),
-						mapValue(descriptor.value),
-						descriptor.configurable!,
-						descriptor.enumerable!,
-						descriptor.writable!,
-					]);
+					if (descriptor.value) {
+						mappedObj[2].push([
+							mapValue(key),
+							mapValue(descriptor.value),
+							descriptor.configurable!,
+							descriptor.enumerable!,
+							descriptor.writable!,
+						]);
+					} else {
+						mappedObj[2].push([
+							mapValue(key),
+							mapValue(descriptor.get),
+							mapValue(descriptor.set),
+							descriptor.configurable!,
+							descriptor.enumerable!,
+						]);
+					}
 				});
 
 			if (mappedObj[0] === 'Map') {

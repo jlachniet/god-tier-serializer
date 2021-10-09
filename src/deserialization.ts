@@ -1,6 +1,11 @@
 import { setPrototypeOf } from './polyfills';
 import { GTAny } from './types';
-import { getDefinitionByIdentifier, isGTObject, safeTypeOf } from './utils';
+import {
+	getDefinitionByIdentifier,
+	isGTDataDescriptor,
+	isGTObject,
+	safeTypeOf,
+} from './utils';
 
 /**
  * Deserializes a value from a string.
@@ -162,16 +167,29 @@ export function deserialize(string: string): unknown {
 		if (isGTObject(value)) {
 			// For each GTObject, convert the GTDescriptors into native descriptors.
 			value[2].forEach((descriptor) => {
-				Object.defineProperty(
-					originalValues[index],
-					originalValues[descriptor[0]],
-					{
-						value: originalValues[descriptor[1]],
-						configurable: descriptor[2],
-						enumerable: descriptor[3],
-						writable: descriptor[4],
-					}
-				);
+				if (isGTDataDescriptor(descriptor)) {
+					Object.defineProperty(
+						originalValues[index],
+						originalValues[descriptor[0]],
+						{
+							value: originalValues[descriptor[1]],
+							configurable: descriptor[2],
+							enumerable: descriptor[3],
+							writable: descriptor[4],
+						}
+					);
+				} else {
+					Object.defineProperty(
+						originalValues[index],
+						originalValues[descriptor[0]],
+						{
+							get: originalValues[descriptor[1]],
+							set: originalValues[descriptor[2]],
+							configurable: descriptor[3],
+							enumerable: descriptor[4],
+						}
+					);
+				}
 			});
 
 			if (value[0] === 'Map') {
