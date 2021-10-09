@@ -1,152 +1,162 @@
 # god-tier-serializer
 
-**<ins>Warning:</ins> god-tier-serializer is still under development and is not ready for production use.**
+![Release](https://img.shields.io/github/v/release/jlachniet/god-tier-serializer?include_prereleases)
+![Dependencies](https://img.shields.io/badge/dependencies-0-green)
+![License](https://img.shields.io/npm/l/god-tier-serializer)
+![Bundlephobia](https://img.shields.io/bundlephobia/min/god-tier-serializer)
+
+**<ins>Warning:</ins> god-tier-serializer is still under development and may contain bugs.**
 
 _Convert any value to and from a serialized string with no headache._
 
-In JavaScript, you often need to store a variable for later, like in local storage or in a file. This means that you need your variable as a string. If your data is simple, then this isn't too hard. But what do you do if you have a complicated data structure? **god-tier-serializer** solves this problem for you.
+In JavaScript, you often need to store a variable for later, like in local storage or in a file. This means that you need your variable as a string. If your data is simple, then this conversion isn't too hard. But what do you do if you have a complicated data structure? **god-tier-serializer** solves this problem for you.
 
-**god-tier-serializer** is better than `JSON.stringify`/`JSON.parse` and other serialization libraries because it's incredibly simple to use and supports most built-in types _(WIP)_, custom prototypes, references, nesting, custom descriptors, and more.
+**god-tier-serializer** is better than `JSON.stringify`/`JSON.parse` and other serialization libraries because it's incredibly simple to use and supports most built-in types (including BigInts, symbols, dates, maps, sets, and typed arrays), custom prototypes, external and cyclical references, nesting, modified descriptors, and more.
 
 ## Usage:
 
-If your variable is a [supported](#supported-types) built-in, all you have to do it call `serialize` and `deserialize`.
+If your variable is a [supported](#supported-types) type, all you have to do it call `serialize` and `deserialize`.
 
 ```js
 const { serialize, deserialize } = require('god-tier-serializer');
 
 let author = {
-	name: 'Julian Lachniet',
+	name: 'Julian',
 	gender: 'male',
 };
 let authorSerialized = serialize(author);
-let author2 = deserialize(authorSerialized);
-
-console.log(author);
-console.log(author2);
+let authorDeserialized = deserialize(authorSerialized);
 ```
 
-If your variable has a custom prototype (like an instance of a class), then just register the prototype first.
+If your variable has a custom prototype (e.g., your variable is an instance of a class or function), then register the prototype first.
 
 ```js
 const { register, serialize } = require('god-tier-serializer');
 
-class Person {}
+class Person {
+	constructor(name, gender) {
+		this.name = name;
+		this.gender = gender;
+	}
+}
 register(Person.prototype, 'Person');
 
-let author = new Person();
+let author = new Person('Julian', 'male');
 let authorSerialized = serialize(author);
 ```
 
-Nested object are supported, but keep in mind that nested objects with custom prototypes also have to be registered.
+Nested object are supported, just keep in mind that nested objects with custom prototypes also need to be registered.
 
 ```js
 const { register, serialize } = require('god-tier-serializer');
 
-class Person {}
+class Person {
+	constructor(name, gender) {
+		this.name = name;
+		this.gender = gender;
+	}
+}
 register(Person.prototype, 'Person');
 
 let projectInfo = {
-	author: new Person(),
+	author: new Person('Julian', 'male'),
 };
 let projectInfoSerialized = serialize(projectInfo);
+```
+
+## Functions:
+
+```ts
+/**
+ * Serializes a value to a string.
+ * @param value The value.
+ * @returns The serialized value.
+ */
+function serialize(value: any): string;
+/**
+ * Deserializes a value from a string.
+ * @param string The serialized value.
+ * @returns The value.
+ */
+function deserialize(string: string): unknown;
+/**
+ * Registers a value with an identifier so that it can be
+ * referenced during serialization and retrieved during
+ * deserialization.
+ * @param value The object.
+ * @param identifier The identifier.
+ */
+function register(value: any, identifier?: string): void;
 ```
 
 ## Configuration:
 
 ```ts
-const { config } = require('god-tier-serializer');
-
 /**
- * Whether to try to infer a prototype's identifer when possible.
+ * Whether to try to infer a prototype's identifier during
+ * registration when possible.
+ *
+ * Enabling this may cause compatibility issues, especially
+ * if your code will be minified, or if you need to support
+ * legacy browsers.
  */
 config.inferIdentifiers = false;
 /**
  * Whether to serialize unregistered prototypes.
+ *
+ * You can safely leave this disabled unless you are
+ * generating prototypes at runtime.
  */
 config.serializePrototypes = false;
 ```
 
-## Browser/environment support:
-
-**god-tier-serializer** should support any browser or environment that supports ES5. Some features may require later versions of JavaScript.
-
 ## Supported types:
 
-Since **god-tier-serializer** is still in development, not every built-in type in supported yet. The following tracks the progress of how well every type is supported.
+- Primitives:
+  - Undefined
+  - Null
+  - Boolean
+  - Number
+  - String
+  - Symbol
+  - BigInt
+- Objects:
+  - Standard Object
+  - Null Object
+  - Custom Prototype Object
+  - Arrays:
+    - Standard Array
+    - Typed Arrays:
+      - Int8Array
+      - Uint8Array
+      - Uint8ClampedArray
+      - Int16Array
+      - Uint16Array
+      - Int32Array
+      - Uint32Array
+      - Float32Array
+      - Float64Array
+      - BigInt64Array
+      - BigUint64Array
+  - Date
+  - Map
+  - Set
+  - Primitive Wrapper Objects:
+    - Boolean Object
+    - Number Object
+    - String Object
+    - Symbol Object
+    - BigInt Object
+  - RegExp
+  - Functions:
+    - Standard Function
+    - Async Function
+    - Generator Function
+    - Async Generator Function
 
-✔️ = Fully supported
+## Browser/environment support:
 
-📝 = Partially supported
-
-❌ = Not supported
-
-```
-✔️ Undefined
-✔️ Null
-✔️ BigInt
-✔️ Boolean
-✔️ Number
-✔️ String
-✔️ Symbol
-📝 Object
-   📝 Object with prototype null
-   📝 Object with prototype Object.prototype
-   📝 Object with custom prototype
-   📝 Array
-     📝 Int8Array
-     📝 Uint8Array
-     📝 Uint8ClampedArray
-     📝 Int16Array
-     📝 Uint16Array
-     📝 Int32Array
-     📝 Uint32Array
-     📝 Float32Array
-     📝 Float64Array
-     📝 BigInt64Array
-     📝 BigUint64Array
-   📝 Date
-   📝 RegExp
-   📝 Function
-   📝 Boolean Object
-   📝 Number Object
-   📝 String Object
-   📝 BigInt Object
-   📝 Map
-   📝 Set
-   📝 GeneratorFunction
-   📝 AsyncFunction
-   📝 AsyncGeneratorFunction
-   📝 Symbol Object
-   ❌ Error
-     ❌ AggregateError
-     ❌ EvalError
-     ❌ InternalError
-     ❌ RangeError
-     ❌ ReferenceError
-     ❌ SyntaxError
-     ❌ TypeError
-     ❌ URIError
-   ❌ ArrayBuffer
-   ❌ SharedArrayBuffer
-   ❌ DataView
-   ❌ Promise
-   ❌ Proxy
-   ❌ Intl.Collator
-   ❌ Intl.DateTimeFormat
-   ❌ Intl.ListFormat
-   ❌ Intl.NumberFormat
-   ❌ Intl.PluralRules
-   ❌ Intl.RelativeTimeFormat
-   ❌ Intl.Locale
-   ❌ WebAssembly.Module
-   ❌ WebAssembly.Instance
-   ❌ WebAssembly.Memory
-   ❌ WebAssembly.Table
-   ❌ WebAssembly.CompileError
-   ❌ WebAssembly.LinkError
-   ❌ WebAssembly.RuntimeError
-```
+**god-tier-serializer** supports any browser or environment that supports ES5.
 
 ## License
 
