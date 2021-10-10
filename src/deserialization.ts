@@ -164,7 +164,10 @@ export function deserialize(string: string): unknown {
 				}
 
 				const proto = mappedValues[mappedValue[1]];
-				if (proto[0] !== 'reference' || proto[1] !== mappedValue[0]) {
+				if (
+					mappedValue[0] !== 'Object' &&
+					(proto[0] !== 'reference' || proto[1] !== mappedValue[0])
+				) {
 					setPrototypeOf(originalValues[index], originalValues[mappedValue[1]]);
 				}
 		}

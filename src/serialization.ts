@@ -289,30 +289,33 @@ export function serialize(value: any) {
 		}
 		mappedObj[1] = mapValue(Object.getPrototypeOf(object));
 
-		(Object.getOwnPropertyNames(object) as (string | symbol)[])
-			.concat(Object.getOwnPropertySymbols(object))
-			.forEach((key) => {
-				// For each property on the object, get the descriptor and add a
-				// GTProperty to the GTObject based on it.
-				const descriptor = Object.getOwnPropertyDescriptor(object, key)!;
-				if (descriptor.get || descriptor.set) {
-					mappedObj[2].push([
-						mapValue(key),
-						mapValue(descriptor.get),
-						mapValue(descriptor.set),
-						descriptor.configurable!,
-						descriptor.enumerable!,
-					]);
-				} else {
-					mappedObj[2].push([
-						mapValue(key),
-						mapValue(descriptor.value),
-						descriptor.configurable!,
-						descriptor.enumerable!,
-						descriptor.writable!,
-					]);
-				}
-			});
+		let keys = Object.getOwnPropertyNames(object) as (string | symbol)[];
+		if (Object.getOwnPropertySymbols) {
+			keys = keys.concat(Object.getOwnPropertySymbols(object));
+		}
+		
+		keys.forEach((key) => {
+			// For each property on the object, get the descriptor and add a
+			// GTProperty to the GTObject based on it.
+			const descriptor = Object.getOwnPropertyDescriptor(object, key)!;
+			if (descriptor.get || descriptor.set) {
+				mappedObj[2].push([
+					mapValue(key),
+					mapValue(descriptor.get),
+					mapValue(descriptor.set),
+					descriptor.configurable!,
+					descriptor.enumerable!,
+				]);
+			} else {
+				mappedObj[2].push([
+					mapValue(key),
+					mapValue(descriptor.value),
+					descriptor.configurable!,
+					descriptor.enumerable!,
+					descriptor.writable!,
+				]);
+			}
+		});
 
 		if (mappedObj[0] === 'Map') {
 			Map.prototype.forEach.call(object, (key, value) => {

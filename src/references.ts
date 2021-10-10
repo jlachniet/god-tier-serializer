@@ -22,27 +22,39 @@ type ValueDefinition = [
 export const definitions: ValueDefinition[] = [
 	[Object.prototype, 'Object'],
 	[Array.prototype, 'Array'],
-	[BigInt.prototype, 'BigInt'],
 	[Boolean.prototype, 'Boolean'],
 	[Date.prototype, 'Date'],
-	[Int8Array.prototype, 'Int8Array'],
-	[Uint8Array.prototype, 'Uint8Array'],
-	[Uint8ClampedArray.prototype, 'Uint8ClampedArray'],
-	[Int16Array.prototype, 'Int16Array'],
-	[Uint16Array.prototype, 'Uint16Array'],
-	[Int32Array.prototype, 'Int32Array'],
-	[Uint32Array.prototype, 'Uint32Array'],
-	[Float32Array.prototype, 'Float32Array'],
-	[Float64Array.prototype, 'Float64Array'],
-	[BigInt64Array.prototype, 'BigInt64Array'],
-	[BigUint64Array.prototype, 'BigUint64Array'],
-	[Map.prototype, 'Map'],
 	[Number.prototype, 'Number'],
 	[RegExp.prototype, 'RegExp'],
-	[Set.prototype, 'Set'],
 	[String.prototype, 'String'],
-	[Symbol.prototype, 'Symbol'],
 ];
+
+typeof Int8Array !== 'undefined' &&
+	definitions.push([Int8Array.prototype, 'Int8Array']);
+typeof Uint8Array !== 'undefined' &&
+	definitions.push([Uint8Array.prototype, 'Uint8Array']);
+typeof Uint8ClampedArray !== 'undefined' &&
+	definitions.push([Uint8ClampedArray.prototype, 'Uint8ClampedArray']);
+typeof Int16Array !== 'undefined' &&
+	definitions.push([Int16Array.prototype, 'Int16Array']);
+typeof Uint16Array !== 'undefined' &&
+	definitions.push([Uint16Array.prototype, 'Uint16Array']);
+typeof Int32Array !== 'undefined' &&
+	definitions.push([Int32Array.prototype, 'Int32Array']);
+typeof Uint32Array !== 'undefined' &&
+	definitions.push([Uint32Array.prototype, 'Uint32Array']);
+typeof Float32Array !== 'undefined' &&
+	definitions.push([Float32Array.prototype, 'Float32Array']);
+typeof Float64Array !== 'undefined' &&
+	definitions.push([Float64Array.prototype, 'Float64Array']);
+typeof BigInt64Array !== 'undefined' &&
+	definitions.push([BigInt64Array.prototype, 'BigInt64Array']);
+typeof BigUint64Array !== 'undefined' &&
+	definitions.push([BigUint64Array.prototype, 'BigUint64Array']);
+typeof BigInt !== 'undefined' && definitions.push([BigInt.prototype, 'BigInt']);
+typeof Map !== 'undefined' && definitions.push([Map.prototype, 'Map']);
+typeof Set !== 'undefined' && definitions.push([Set.prototype, 'Set']);
+typeof Symbol !== 'undefined' && definitions.push([Symbol.prototype, 'Symbol']);
 
 /**
  * Registers an object with an identifier so that it can be referenced during
