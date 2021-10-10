@@ -1,4 +1,4 @@
-/*! god-tier-serializer 0.5.1 | MIT License | https://github.com/jlachniet/god-tier-serializer */
+/*! god-tier-serializer 0.5.2 | MIT License | https://github.com/jlachniet/god-tier-serializer */
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -11,9 +11,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.config = void 0;
 var utils_1 = __webpack_require__(593);
 exports.config = {
+    /**
+     * Whether to infer a prototype's identifier during registration when
+     * possible.
+     *
+     * Enabling this may cause compatibility issues, especially if your code
+     * will be minified, or if you need to support legacy browsers.
+     */
     get inferIdentifiers() {
         return _inferIdentifiers;
     },
+    /**
+     * Whether to serialize unregistered prototypes.
+     *
+     * You can safely leave this disabled unless you are generating prototypes
+     * at runtime.
+     */
     get serializePrototypes() {
         return _serializePrototypes;
     },
@@ -371,9 +384,9 @@ typeof Map !== 'undefined' && exports.definitions.push([Map.prototype, 'Map']);
 typeof Set !== 'undefined' && exports.definitions.push([Set.prototype, 'Set']);
 typeof Symbol !== 'undefined' && exports.definitions.push([Symbol.prototype, 'Symbol']);
 /**
- * Registers an object with an identifier so that it can be referenced during
+ * Registers a value with an identifier so that it can be referenced during
  * serialization and retrieved during deserialization.
- * @param value The object.
+ * @param value The value.
  * @param identifier The identifier.
  */
 function register(value, identifier) {

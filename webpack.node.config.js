@@ -1,3 +1,4 @@
+const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const { BannerPlugin } = require('webpack');
 
@@ -20,6 +21,14 @@ module.exports = {
 	plugins: [
 		new BannerPlugin({
 			banner: `god-tier-serializer ${process.env.npm_package_version} | MIT License | https://github.com/jlachniet/god-tier-serializer`,
+		}),
+		new CopyPlugin({
+			patterns: [
+				{
+					from: 'src/index.d.ts',
+					to: 'god-tier-serializer.d.ts',
+				},
+			],
 		}),
 	],
 	optimization: {
