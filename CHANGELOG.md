@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2
+
+- Fixed incorrect entry point for node
+
 ## 0.5.1
 
 - Separated builds into node and browser builds
