@@ -1,14 +1,12 @@
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
 const { BannerPlugin } = require('webpack');
 
 module.exports = {
 	entry: './src/index.ts',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'index.js',
-		clean: true,
-		library: { name: 'GodTierSerializer', type: 'umd' },
+		filename: 'god-tier-serializer.js',
+		library: { type: 'commonjs2' },
 		globalObject: 'this',
 	},
 	module: {
@@ -25,13 +23,9 @@ module.exports = {
 		}),
 	],
 	optimization: {
-		minimizer: [
-			new TerserPlugin({
-				extractComments: false,
-			}),
-		],
+		minimize: false,
 	},
 	mode: 'production',
 	resolve: { extensions: ['.ts'] },
-	target: ['web', 'es5'],
+	target: ['node', 'es5'],
 };

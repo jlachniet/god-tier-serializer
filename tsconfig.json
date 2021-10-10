@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
 		"strict": true,
-		"target": "ES5",
-		"outDir": "dist"
+		"target": "ES5"
 	}
 }
