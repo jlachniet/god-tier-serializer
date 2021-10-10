@@ -68,24 +68,23 @@ let projectInfoSerialized = serialize(projectInfo);
 
 ```ts
 /**
- * Serialize a value to a string.
+ * Serializes a value to a string.
  * @param value The value.
  * @returns The serialized value.
  */
 function serialize(value: any): string;
 
 /**
- * Deserialize a value from a string.
+ * Deserializes a value from a string.
  * @param string The serialized value.
  * @returns The value.
  */
 function deserialize(string: string): unknown;
 
 /**
- * Register a value with an identifier so that it can be
- * referenced during serialization and retrieved during
- * deserialization.
- * @param value The object.
+ * Registers a value with an identifier so that it can be referenced during
+ * serialization and retrieved during deserialization.
+ * @param value The value.
  * @param identifier The identifier.
  */
 function register(value: any, identifier?: string): void;
@@ -95,21 +94,18 @@ function register(value: any, identifier?: string): void;
 
 ```ts
 /**
- * This controls whether to try to infer a prototype's
- * identifier during registration when possible.
+ * Whether to infer a prototype's identifier during registration when possible.
  *
- * Enabling this may cause compatibility issues, especially
- * if your code will be minified, or if you need to support
- * legacy browsers.
+ * Enabling this may cause compatibility issues, especially if your code will be
+ * minified, or if you need to support legacy browsers.
  */
 config.inferIdentifiers = false;
 
 /**
- * This controls whether to serialize unregistered
- * prototypes.
+ * Whether to serialize unregistered prototypes.
  *
- * You can safely leave this disabled unless you are
- * generating prototypes at runtime.
+ * You can safely leave this disabled unless you are generating prototypes at
+ * runtime.
  */
 config.serializePrototypes = false;
 ```
@@ -152,7 +148,7 @@ config.serializePrototypes = false;
     - Symbol Object
     - BigInt Object
   - RegExp
-  - Functions:
+  - Functions: _(serialized as references only)_
     - Standard Function
     - Async Function
     - Generator Function

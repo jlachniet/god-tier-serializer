@@ -1,9 +1,22 @@
 import { safeTypeOf } from './utils';
 
 export const config = {
+	/**
+	 * Whether to infer a prototype's identifier during registration when
+	 * possible.
+	 *
+	 * Enabling this may cause compatibility issues, especially if your code
+	 * will be minified, or if you need to support legacy browsers.
+	 */
 	get inferIdentifiers() {
 		return _inferIdentifiers;
 	},
+	/**
+	 * Whether to serialize unregistered prototypes.
+	 *
+	 * You can safely leave this disabled unless you are generating prototypes
+	 * at runtime.
+	 */
 	get serializePrototypes() {
 		return _serializePrototypes;
 	},

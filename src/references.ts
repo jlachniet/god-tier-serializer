@@ -57,9 +57,9 @@ typeof Set !== 'undefined' && definitions.push([Set.prototype, 'Set']);
 typeof Symbol !== 'undefined' && definitions.push([Symbol.prototype, 'Symbol']);
 
 /**
- * Registers an object with an identifier so that it can be referenced during
+ * Registers a value with an identifier so that it can be referenced during
  * serialization and retrieved during deserialization.
- * @param value The object.
+ * @param value The value.
  * @param identifier The identifier.
  */
 export function register(value: any, identifier?: string) {

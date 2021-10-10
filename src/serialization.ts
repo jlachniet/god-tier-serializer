@@ -293,7 +293,7 @@ export function serialize(value: any) {
 		if (Object.getOwnPropertySymbols) {
 			keys = keys.concat(Object.getOwnPropertySymbols(object));
 		}
-		
+
 		keys.forEach((key) => {
 			// For each property on the object, get the descriptor and add a
 			// GTProperty to the GTObject based on it.
