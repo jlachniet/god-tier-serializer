@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+- Separated builds into node and browser builds
+- Fixed issues with ES5 compatibility
+
 ## 0.5.0
 
 - Added the ability to register any value, not just objects
