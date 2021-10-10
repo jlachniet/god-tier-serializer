@@ -16,7 +16,7 @@
 	"files": [
 		"dist/god-tier-serializer.js"
 	],
-	"main": "dist/index.js",
+	"main": "dist/god-tier-serializer.js",
 	"repository": "https://github.com/jlachniet/god-tier-serializer",
 	"scripts": {
 		"build": "webpack --config webpack.node.config.js && webpack --config webpack.browser.config.js",
