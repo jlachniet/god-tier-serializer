@@ -14,7 +14,8 @@
 	"license": "MIT",
 	"author": "Julian Lachniet",
 	"files": [
-		"dist/god-tier-serializer.js"
+		"dist/god-tier-serializer.js",
+		"dist/god-tier-serializer.d.ts"
 	],
 	"main": "dist/god-tier-serializer.js",
 	"repository": "https://github.com/jlachniet/god-tier-serializer",
