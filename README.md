@@ -156,7 +156,7 @@ config.serializePrototypes = false;
 
 ## Browser/environment support:
 
-**god-tier-serializer** supports any browser or environment that supports ES5.
+**god-tier-serializer** supports any browser or environment that supports ES5. Some functionality may require a newer environment, such as deserializing modified prototypes and newer types.
 
 ## License
 
