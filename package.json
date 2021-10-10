@@ -1,6 +1,6 @@
 {
 	"name": "god-tier-serializer",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"description": "Convert any value to and from a serialized string with no headache.",
 	"keywords": [
 		"god-tier-serializer",
