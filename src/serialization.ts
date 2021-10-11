@@ -25,7 +25,7 @@ export function serialize(value: any) {
 	// and adds the mapped value to the mapped values. This function will call
 	// itself recursively to handle its children and prototype, so once this
 	// call is done, both arrays will most likely contain several values.
-	mapValue(value);
+	mapValue(value, 'value');
 
 	// Return the mapped values as text.
 	return JSON.stringify(mappedValues);
@@ -34,10 +34,11 @@ export function serialize(value: any) {
 	 * Converts a value to a {@link GTAny} and adds the original value to
 	 * {@link knownValues} and the converted value to {@Link mappedValues}.
 	 * @param value The value.
+	 * @param path The path.
 	 * @returns The index at which the value was added.
 	 * @internal
 	 */
-	function mapValue(value: any) {
+	function mapValue(value: any, path: string) {
 		if (safeIndexOf(knownValues, value) > -1) {
 			// If the value is already mapped, return the index of the value.
 			return safeIndexOf(knownValues, value);
@@ -68,7 +69,7 @@ export function serialize(value: any) {
 			case 'symbol':
 				return mapSymbol(value);
 			case 'object':
-				return mapObject(value);
+				return mapObject(value, path);
 			default:
 				throw new TypeError(
 					'Failed to serialize value with unknown type ' + safeTypeOf(value)
@@ -168,10 +169,11 @@ export function serialize(value: any) {
 	/**
 	 * Adds an object to the known and mapped values.
 	 * @param object The object.
+	 * @param path The path.
 	 * @returns The index at which the object was added.
 	 * @internal
 	 */
-	function mapObject(object: object) {
+	function mapObject(object: object, path: string) {
 		// Add the object to the known values and record its position so it can
 		// be returned later.
 		knownValues.push(object);
@@ -187,7 +189,7 @@ export function serialize(value: any) {
 			case 'AsyncGeneratorFunction':
 			case 'Function':
 			case 'GeneratorFunction':
-				throw new Error('Could not serialize unregistered function');
+				throw new Error('Could not serialize unregistered function at ' + path);
 			case 'BigInt':
 				mappedObj = [
 					'BigInt',
@@ -284,10 +286,10 @@ export function serialize(value: any) {
 			!config.serializePrototypes
 		) {
 			throw new Error(
-				'Could not serialize value with unregistered prototype, register the prototype or set config.serializePrototypes to true'
+				'Could not serialize value with unregistered prototype at ' + path
 			);
 		}
-		mappedObj[1] = mapValue(Object.getPrototypeOf(object));
+		mappedObj[1] = mapValue(Object.getPrototypeOf(object), '');
 
 		let keys = Object.getOwnPropertyNames(object) as (string | symbol)[];
 		if (Object.getOwnPropertySymbols) {
@@ -300,16 +302,16 @@ export function serialize(value: any) {
 			const descriptor = Object.getOwnPropertyDescriptor(object, key)!;
 			if (descriptor.get || descriptor.set) {
 				mappedObj[2].push([
-					mapValue(key),
-					mapValue(descriptor.get),
-					mapValue(descriptor.set),
+					mapValue(key, ''),
+					mapValue(descriptor.get, path + '["' + String(key) + '" getter]'),
+					mapValue(descriptor.set, path + '["' + String(key) + '" setter]'),
 					descriptor.configurable!,
 					descriptor.enumerable!,
 				]);
 			} else {
 				mappedObj[2].push([
-					mapValue(key),
-					mapValue(descriptor.value),
+					mapValue(key, ''),
+					mapValue(descriptor.value, path + '["' + String(key) + '"]'),
 					descriptor.configurable!,
 					descriptor.enumerable!,
 					descriptor.writable!,
@@ -318,14 +320,21 @@ export function serialize(value: any) {
 		});
 
 		if (mappedObj[0] === 'Map') {
-			Map.prototype.forEach.call(object, (key, value) => {
-				(mappedObj as GTMap)[3].push([mapValue(key), mapValue(value)]);
+			let i = 0;
+			Map.prototype.forEach.call(object, (value, key) => {
+				(mappedObj as GTMap)[3].push([
+					mapValue(key, path + ' key#' + i),
+					mapValue(value, path + ' val#' + i),
+				]);
+				i++;
 			});
 		}
 
 		if (mappedObj[0] === 'Set') {
+			let i = 0;
 			Set.prototype.forEach.call(object, (value) => {
-				(mappedObj as GTSet)[3].push(mapValue(value));
+				(mappedObj as GTSet)[3].push(mapValue(value, path + ' val#' + i));
+				i++;
 			});
 		}
 

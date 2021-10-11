@@ -420,9 +420,6 @@ function register(value, identifier) {
             throw new Error('register called without an identifier, and the identifier could not be inferred');
         }
     }
-    // Prepend an at sign character to the identifier to prevent collisions with
-    // built-in objects.
-    identifier = '@' + identifier;
     // Check if the object is already registered.
     if ((0, utils_1.getDefinitionByValue)(value)) {
         throw new Error('register called with an object that is already registered');
@@ -461,17 +458,18 @@ function serialize(value) {
     // and adds the mapped value to the mapped values. This function will call
     // itself recursively to handle its children and prototype, so once this
     // call is done, both arrays will most likely contain several values.
-    mapValue(value);
+    mapValue(value, 'value');
     // Return the mapped values as text.
     return JSON.stringify(mappedValues);
     /**
      * Converts a value to a {@link GTAny} and adds the original value to
      * {@link knownValues} and the converted value to {@Link mappedValues}.
      * @param value The value.
+     * @param path The path.
      * @returns The index at which the value was added.
      * @internal
      */
-    function mapValue(value) {
+    function mapValue(value, path) {
         if ((0, utils_1.safeIndexOf)(knownValues, value) > -1) {
             // If the value is already mapped, return the index of the value.
             return (0, utils_1.safeIndexOf)(knownValues, value);
@@ -500,7 +498,7 @@ function serialize(value) {
             case 'symbol':
                 return mapSymbol(value);
             case 'object':
-                return mapObject(value);
+                return mapObject(value, path);
             default:
                 throw new TypeError('Failed to serialize value with unknown type ' + (0, utils_1.safeTypeOf)(value));
         }
@@ -589,10 +587,11 @@ function serialize(value) {
     /**
      * Adds an object to the known and mapped values.
      * @param object The object.
+     * @param path The path.
      * @returns The index at which the object was added.
      * @internal
      */
-    function mapObject(object) {
+    function mapObject(object, path) {
         // Add the object to the known values and record its position so it can
         // be returned later.
         knownValues.push(object);
@@ -606,7 +605,7 @@ function serialize(value) {
             case 'AsyncGeneratorFunction':
             case 'Function':
             case 'GeneratorFunction':
-                throw new Error('Could not serialize unregistered function');
+                throw new Error('Could not serialize unregistered function at ' + path);
             case 'BigInt':
                 mappedObj = [
                     'BigInt',
@@ -695,9 +694,9 @@ function serialize(value) {
         if (Object.getPrototypeOf(object) !== null &&
             !(0, utils_1.getDefinitionByValue)(Object.getPrototypeOf(object)) &&
             !config_1.config.serializePrototypes) {
-            throw new Error('Could not serialize value with unregistered prototype, register the prototype or set config.serializePrototypes to true');
+            throw new Error('Could not serialize value with unregistered prototype at ' + path);
         }
-        mappedObj[1] = mapValue(Object.getPrototypeOf(object));
+        mappedObj[1] = mapValue(Object.getPrototypeOf(object), '');
         var keys = Object.getOwnPropertyNames(object);
         if (Object.getOwnPropertySymbols) {
             keys = keys.concat(Object.getOwnPropertySymbols(object));
@@ -708,17 +707,17 @@ function serialize(value) {
             var descriptor = Object.getOwnPropertyDescriptor(object, key);
             if (descriptor.get || descriptor.set) {
                 mappedObj[2].push([
-                    mapValue(key),
-                    mapValue(descriptor.get),
-                    mapValue(descriptor.set),
+                    mapValue(key, ''),
+                    mapValue(descriptor.get, path + '["' + String(key) + '" getter]'),
+                    mapValue(descriptor.set, path + '["' + String(key) + '" setter]'),
                     descriptor.configurable,
                     descriptor.enumerable,
                 ]);
             }
             else {
                 mappedObj[2].push([
-                    mapValue(key),
-                    mapValue(descriptor.value),
+                    mapValue(key, ''),
+                    mapValue(descriptor.value, path + '["' + String(key) + '"]'),
                     descriptor.configurable,
                     descriptor.enumerable,
                     descriptor.writable,
@@ -726,13 +725,20 @@ function serialize(value) {
             }
         });
         if (mappedObj[0] === 'Map') {
-            Map.prototype.forEach.call(object, function (key, value) {
-                mappedObj[3].push([mapValue(key), mapValue(value)]);
+            var i_1 = 0;
+            Map.prototype.forEach.call(object, function (value, key) {
+                mappedObj[3].push([
+                    mapValue(key, path + ' key#' + i_1),
+                    mapValue(value, path + ' val#' + i_1),
+                ]);
+                i_1++;
             });
         }
         if (mappedObj[0] === 'Set') {
+            var i_2 = 0;
             Set.prototype.forEach.call(object, function (value) {
-                mappedObj[3].push(mapValue(value));
+                mappedObj[3].push(mapValue(value, path + ' val#' + i_2));
+                i_2++;
             });
         }
         // Return the position at which the object was added.

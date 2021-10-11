@@ -93,10 +93,6 @@ export function register(value: any, identifier?: string) {
 		}
 	}
 
-	// Prepend an at sign character to the identifier to prevent collisions with
-	// built-in objects.
-	identifier = '@' + identifier;
-
 	// Check if the object is already registered.
 	if (getDefinitionByValue(value)) {
 		throw new Error(
@@ -105,11 +101,11 @@ export function register(value: any, identifier?: string) {
 	}
 
 	// Check if the identifier is already registered.
-	if (getDefinitionByIdentifier(identifier)) {
+	if (getDefinitionByIdentifier(identifier!)) {
 		throw new Error(
 			'register called with an identifier that is already registered'
 		);
 	}
 
-	definitions.push([value, identifier]);
+	definitions.push([value, identifier!]);
 }
