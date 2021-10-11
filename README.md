@@ -138,16 +138,16 @@ config.serializePrototypes = false;
       - Float64Array
       - BigInt64Array
       - BigUint64Array
-  - Date
   - Map
   - Set
+  - Date
+  - RegExp
   - Primitive Wrapper Objects:
     - Boolean Object
     - Number Object
     - String Object
     - Symbol Object
     - BigInt Object
-  - RegExp
   - Functions: _(serialized as references only)_
     - Standard Function
     - Async Function

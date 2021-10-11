@@ -63,6 +63,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deserialize = void 0;
 var polyfills_1 = __webpack_require__(360);
 var utils_1 = __webpack_require__(593);
+var predicates_1 = __webpack_require__(673);
 /**
  * Deserializes a value from a string.
  * @param string The serialized value.
@@ -215,10 +216,10 @@ function deserialize(string) {
         }
     }
     mappedValues.forEach(function (value, index) {
-        if ((0, utils_1.isGTObject)(value)) {
+        if ((0, predicates_1.isGTObject)(value)) {
             // For each GTObject, convert the GTDescriptors into native descriptors.
             value[2].forEach(function (descriptor) {
-                if ((0, utils_1.isGTDataProperty)(descriptor)) {
+                if ((0, predicates_1.isGTDataProperty)(descriptor)) {
                     Object.defineProperty(originalValues[index], originalValues[descriptor[0]], {
                         value: originalValues[descriptor[1]],
                         configurable: descriptor[2],
@@ -748,7 +749,7 @@ exports.serialize = serialize;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.structureTypedArray = exports.numberToString = exports.isGTDataProperty = exports.isGTObject = exports.getDefinitionByValue = exports.getDefinitionByIdentifier = exports.objectTypeOf = exports.safeTypeOf = exports.safeIndexOf = void 0;
+exports.structureTypedArray = exports.numberToString = exports.getDefinitionByValue = exports.getDefinitionByIdentifier = exports.objectTypeOf = exports.safeTypeOf = exports.safeIndexOf = void 0;
 var polyfills_1 = __webpack_require__(360);
 var references_1 = __webpack_require__(886);
 /**
@@ -840,32 +841,6 @@ function getDefinitionByValue(value) {
 }
 exports.getDefinitionByValue = getDefinitionByValue;
 /**
- * Checks whether a {@link GTAny} is a {@link GTObject}.
- * @param value The GTAny.
- * @returns Whether the GTAny is a GTObject.
- * @internal
- * ```ts
- * isGTObject(['number', '3']) // false
- * ```
- */
-function isGTObject(value) {
-    return value[0] !== 'symbol' && value.length > 2;
-}
-exports.isGTObject = isGTObject;
-/**
- * Checks whether a {@link GTProperty} is a {@link GTDataProperty}.
- * @param value The GTProperty.
- * @returns Whether the GTProperty is a GTDataProperty.
- * @internal
- * ```ts
- * isGTDataProperty([1, 2, true, true, true]) // true
- * ```
- */
-function isGTDataProperty(value) {
-    return safeTypeOf(value[2]) === 'boolean';
-}
-exports.isGTDataProperty = isGTDataProperty;
-/**
  * Converts a number to a string
  *
  * Similar to {@link Number.prototype.toString}, but handles -0 correctly.
@@ -889,6 +864,43 @@ function structureTypedArray(typedArray, constructor) {
     ];
 }
 exports.structureTypedArray = structureTypedArray;
+
+
+/***/ }),
+
+/***/ 673:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isGTDataProperty = exports.isGTObject = void 0;
+var utils_1 = __webpack_require__(593);
+/**
+ * Checks whether a {@link GTAny} is a {@link GTObject}.
+ * @param value The GTAny.
+ * @returns Whether the GTAny is a GTObject.
+ * @internal
+ * ```ts
+ * isGTObject(['number', '3']) // false
+ * ```
+ */
+function isGTObject(value) {
+    return value[0].charAt(0) === value[0].charAt(0).toUpperCase();
+}
+exports.isGTObject = isGTObject;
+/**
+ * Checks whether a {@link GTProperty} is a {@link GTDataProperty}.
+ * @param value The GTProperty.
+ * @returns Whether the GTProperty is a GTDataProperty.
+ * @internal
+ * ```ts
+ * isGTDataProperty([1, 2, true, true, true]) // true
+ * ```
+ */
+function isGTDataProperty(value) {
+    return (0, utils_1.safeTypeOf)(value[2]) === 'boolean';
+}
+exports.isGTDataProperty = isGTDataProperty;
 
 
 /***/ })
