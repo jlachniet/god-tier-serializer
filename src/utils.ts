@@ -2,8 +2,8 @@ import { arrayFind, objectIs } from './polyfills';
 import { definitions } from './references';
 import {
 	GTAny,
-	GTDataDescriptor,
-	GTDescriptor,
+	GTDataProperty,
+	GTProperty,
 	GTObject,
 	GTTypedArray,
 } from './types';
@@ -115,9 +115,16 @@ export function isGTObject(value: GTAny): value is GTObject {
 	return value[0] !== 'symbol' && value.length > 2;
 }
 
-export function isGTDataDescriptor(
-	value: GTDescriptor
-): value is GTDataDescriptor {
+/**
+ * Checks whether a {@link GTProperty} is a {@link GTDataProperty}.
+ * @param value The GTProperty.
+ * @returns Whether the GTProperty is a GTDataProperty.
+ * @internal
+ * ```ts
+ * isGTDataProperty([1, 2, true, true, true]) // true
+ * ```
+ */
+export function isGTDataProperty(value: GTProperty): value is GTDataProperty {
 	return safeTypeOf(value[2]) === 'boolean';
 }
 

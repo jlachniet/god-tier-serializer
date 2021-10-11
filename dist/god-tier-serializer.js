@@ -30,21 +30,23 @@ exports.config = {
     get serializePrototypes() {
         return _serializePrototypes;
     },
-    set inferIdentifiers(state) {
-        if ((0, utils_1.safeTypeOf)(state) !== 'boolean') {
+    set inferIdentifiers(value) {
+        // Validate that the value is the correct type.
+        if ((0, utils_1.safeTypeOf)(value) !== 'boolean') {
             throw new TypeError('config.inferIdentifiers set to invalid value, expected (boolean) but got (' +
-                (0, utils_1.safeTypeOf)(state) +
+                (0, utils_1.safeTypeOf)(value) +
                 ')');
         }
-        _inferIdentifiers = state;
+        _inferIdentifiers = value;
     },
-    set serializePrototypes(state) {
-        if ((0, utils_1.safeTypeOf)(state) !== 'boolean') {
+    set serializePrototypes(value) {
+        // Validate that the value is the correct type.
+        if ((0, utils_1.safeTypeOf)(value) !== 'boolean') {
             throw new TypeError('config.serializePrototypes set to invalid value, expected (boolean) but got (' +
-                (0, utils_1.safeTypeOf)(state) +
+                (0, utils_1.safeTypeOf)(value) +
                 ')');
         }
-        _serializePrototypes = state;
+        _serializePrototypes = value;
     },
 };
 var _inferIdentifiers = false;
@@ -216,7 +218,7 @@ function deserialize(string) {
         if ((0, utils_1.isGTObject)(value)) {
             // For each GTObject, convert the GTDescriptors into native descriptors.
             value[2].forEach(function (descriptor) {
-                if ((0, utils_1.isGTDataDescriptor)(descriptor)) {
+                if ((0, utils_1.isGTDataProperty)(descriptor)) {
                     Object.defineProperty(originalValues[index], originalValues[descriptor[0]], {
                         value: originalValues[descriptor[1]],
                         configurable: descriptor[2],
@@ -257,15 +259,15 @@ exports.deserialize = deserialize;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deserialize = exports.serialize = exports.register = exports.config = void 0;
-var config_1 = __webpack_require__(913);
-Object.defineProperty(exports, "config", ({ enumerable: true, get: function () { return config_1.config; } }));
-var references_1 = __webpack_require__(886);
-Object.defineProperty(exports, "register", ({ enumerable: true, get: function () { return references_1.register; } }));
+exports.config = exports.register = exports.deserialize = exports.serialize = void 0;
 var serialization_1 = __webpack_require__(485);
 Object.defineProperty(exports, "serialize", ({ enumerable: true, get: function () { return serialization_1.serialize; } }));
 var deserialization_1 = __webpack_require__(775);
 Object.defineProperty(exports, "deserialize", ({ enumerable: true, get: function () { return deserialization_1.deserialize; } }));
+var references_1 = __webpack_require__(886);
+Object.defineProperty(exports, "register", ({ enumerable: true, get: function () { return references_1.register; } }));
+var config_1 = __webpack_require__(913);
+Object.defineProperty(exports, "config", ({ enumerable: true, get: function () { return config_1.config; } }));
 
 
 /***/ }),
@@ -307,7 +309,7 @@ exports.arrayFind = arrayFind;
  */
 function objectIs(value1, value2) {
     if (value1 === value2) {
-        // If the values are strictly equal.
+        // Check if the values are strictly equal.
         if (value1 !== 0) {
             // If neither value is 0 or -0, the values are the same.
             return true;
@@ -324,7 +326,14 @@ function objectIs(value1, value2) {
     }
 }
 exports.objectIs = objectIs;
+/**
+ * Polyfill for {@link Object.setPrototypeOf}, sets the prototype of an object.
+ * @param object The object.
+ * @param prototype The prototype.
+ */
 function setPrototypeOf(object, prototype) {
+    // Some environments only support Object.setPrototypeOf, while others only
+    // support the non-standard __proto__ property.
     if (Object.setPrototypeOf) {
         Object.setPrototypeOf(object, prototype);
     }
@@ -739,7 +748,7 @@ exports.serialize = serialize;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.structureTypedArray = exports.numberToString = exports.isGTDataDescriptor = exports.isGTObject = exports.getDefinitionByValue = exports.getDefinitionByIdentifier = exports.objectTypeOf = exports.safeTypeOf = exports.safeIndexOf = void 0;
+exports.structureTypedArray = exports.numberToString = exports.isGTDataProperty = exports.isGTObject = exports.getDefinitionByValue = exports.getDefinitionByIdentifier = exports.objectTypeOf = exports.safeTypeOf = exports.safeIndexOf = void 0;
 var polyfills_1 = __webpack_require__(360);
 var references_1 = __webpack_require__(886);
 /**
@@ -843,10 +852,19 @@ function isGTObject(value) {
     return value[0] !== 'symbol' && value.length > 2;
 }
 exports.isGTObject = isGTObject;
-function isGTDataDescriptor(value) {
+/**
+ * Checks whether a {@link GTProperty} is a {@link GTDataProperty}.
+ * @param value The GTProperty.
+ * @returns Whether the GTProperty is a GTDataProperty.
+ * @internal
+ * ```ts
+ * isGTDataProperty([1, 2, true, true, true]) // true
+ * ```
+ */
+function isGTDataProperty(value) {
     return safeTypeOf(value[2]) === 'boolean';
 }
-exports.isGTDataDescriptor = isGTDataDescriptor;
+exports.isGTDataProperty = isGTDataProperty;
 /**
  * Converts a number to a string
  *

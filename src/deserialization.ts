@@ -2,7 +2,7 @@ import { setPrototypeOf } from './polyfills';
 import { GTAny } from './types';
 import {
 	getDefinitionByIdentifier,
-	isGTDataDescriptor,
+	isGTDataProperty,
 	isGTObject,
 	safeTypeOf,
 } from './utils';
@@ -177,7 +177,7 @@ export function deserialize(string: string): unknown {
 		if (isGTObject(value)) {
 			// For each GTObject, convert the GTDescriptors into native descriptors.
 			value[2].forEach((descriptor) => {
-				if (isGTDataDescriptor(descriptor)) {
+				if (isGTDataProperty(descriptor)) {
 					Object.defineProperty(
 						originalValues[index],
 						originalValues[descriptor[0]],

@@ -11,6 +11,7 @@ export const config = {
 	get inferIdentifiers() {
 		return _inferIdentifiers;
 	},
+
 	/**
 	 * Whether to serialize unregistered prototypes.
 	 *
@@ -20,25 +21,29 @@ export const config = {
 	get serializePrototypes() {
 		return _serializePrototypes;
 	},
-	set inferIdentifiers(state) {
-		if (safeTypeOf(state) !== 'boolean') {
+
+	set inferIdentifiers(value) {
+		// Validate that the value is the correct type.
+		if (safeTypeOf(value) !== 'boolean') {
 			throw new TypeError(
 				'config.inferIdentifiers set to invalid value, expected (boolean) but got (' +
-					safeTypeOf(state) +
+					safeTypeOf(value) +
 					')'
 			);
 		}
-		_inferIdentifiers = state;
+		_inferIdentifiers = value;
 	},
-	set serializePrototypes(state) {
-		if (safeTypeOf(state) !== 'boolean') {
+
+	set serializePrototypes(value) {
+		// Validate that the value is the correct type.
+		if (safeTypeOf(value) !== 'boolean') {
 			throw new TypeError(
 				'config.serializePrototypes set to invalid value, expected (boolean) but got (' +
-					safeTypeOf(state) +
+					safeTypeOf(value) +
 					')'
 			);
 		}
-		_serializePrototypes = state;
+		_serializePrototypes = value;
 	},
 };
 

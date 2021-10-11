@@ -9,16 +9,31 @@
  * arrayFind([1, 2, 3], (element) => element == 2) // 2
  * ```
  */
-export function arrayFind<T>(
-	array: T[],
-	callback: (element: T, index: number, array: T[]) => boolean
-) {
+export function arrayFind<T>(array: T[], callback: arrayFindCallback<T>) {
 	for (let i = 0; i < array.length; i++) {
 		if (callback(array[i], i, array)) {
 			return array[i];
 		}
 	}
 }
+
+/**
+ * An {@link arrayFind} callback.
+ */
+type arrayFindCallback<T> = (
+	/**
+	 * The element.
+	 */
+	element: T,
+	/**
+	 * The index.
+	 */
+	index: number,
+	/**
+	 * The array.
+	 */
+	array: T[]
+) => boolean;
 
 /**
  * Polyfill for {@link Object.is}, determines whether two values are the same.
@@ -32,7 +47,7 @@ export function arrayFind<T>(
  */
 export function objectIs(value1: any, value2: any) {
 	if (value1 === value2) {
-		// If the values are strictly equal.
+		// Check if the values are strictly equal.
 		if (value1 !== 0) {
 			// If neither value is 0 or -0, the values are the same.
 			return true;
@@ -47,7 +62,14 @@ export function objectIs(value1: any, value2: any) {
 	}
 }
 
+/**
+ * Polyfill for {@link Object.setPrototypeOf}, sets the prototype of an object.
+ * @param object The object.
+ * @param prototype The prototype.
+ */
 export function setPrototypeOf(object: object, prototype: object | null) {
+	// Some environments only support Object.setPrototypeOf, while others only
+	// support the non-standard __proto__ property.
 	if (Object.setPrototypeOf) {
 		Object.setPrototypeOf(object, prototype);
 	} else if ((object as any).__proto__) {

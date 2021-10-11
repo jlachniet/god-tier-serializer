@@ -100,11 +100,11 @@ export type GTSymbol = [
 	 */
 	type: 'symbol',
 	/**
-	 * The description of the symbol.
+	 * The description.
 	 */
 	description: string,
 	/**
-	 * The symbol's key, if it has one.
+	 * The key.
 	 */
 	key?: string
 ];
@@ -115,15 +115,15 @@ export type GTSymbol = [
 export type GTObject =
 	| GTStandardObject
 	| GTArray
-	| GTBigIntObject
-	| GTBooleanObject
-	| GTDate
-	| GTMap
-	| GTNumberObject
-	| GTRegExp
-	| GTStringObject
 	| GTTypedArray
+	| GTMap
 	| GTSet
+	| GTDate
+	| GTRegExp
+	| GTBooleanObject
+	| GTNumberObject
+	| GTStringObject
+	| GTBigIntObject
 	| GTSymbolObject;
 
 /**
@@ -141,7 +141,7 @@ export type GTStandardObject = [
 	/**
 	 * The properties of the object.
 	 */
-	descriptors: GTDescriptor[]
+	properties: GTProperty[]
 ];
 
 /**
@@ -159,73 +159,7 @@ export type GTArray = [
 	/**
 	 * The properties of the array.
 	 */
-	descriptors: GTDescriptor[]
-];
-
-/**
- * A structured BigInt object.
- */
-export type GTBigIntObject = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'BigInt',
-	/**
-	 * The index of the prototype.
-	 */
-	prototypeIndex: number,
-	/**
-	 * The properties of the BigInt object.
-	 */
-	descriptors: GTDescriptor[],
-	/**
-	 * The internal value of the BigInt object as a string.
-	 */
-	internalValueAsString: string
-];
-
-/**
- * A structured boolean object.
- */
-export type GTBooleanObject = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Boolean',
-	/**
-	 * The index of the prototype.
-	 */
-	prototypeIndex: number,
-	/**
-	 * The properties of the boolean object.
-	 */
-	descriptors: GTDescriptor[],
-	/**
-	 * The internal value of the boolean object.
-	 */
-	internalValue: boolean
-];
-
-/**
- * A structured date.
- */
-export type GTDate = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Date',
-	/**
-	 * The index of the prototype.
-	 */
-	prototypeIndex: number,
-	/**
-	 * The properties of the date.
-	 */
-	descriptors: GTDescriptor[],
-	/**
-	 * The internal value of the date.
-	 */
-	internalValue: number
+	properties: GTProperty[]
 ];
 
 /**
@@ -254,77 +188,11 @@ export type GTTypedArray = [
 	/**
 	 * The properties of the TypedArray.
 	 */
-	descriptors: GTDescriptor[],
+	properties: GTProperty[],
 	/**
 	 * The length of the TypedArray.
 	 */
 	length: number
-];
-
-/**
- * A structured number object.
- */
-export type GTNumberObject = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Number',
-	/**
-	 * The index of the prototype.
-	 */
-	prototypeIndex: number,
-	/**
-	 * The properties of the number object.
-	 */
-	descriptors: GTDescriptor[],
-	/**
-	 * The internal value of the number object as a string.
-	 */
-	internalValueAsString: string
-];
-
-/**
- * A structured RegExp.
- */
-export type GTRegExp = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'RegExp',
-	/**
-	 * The index of the prototype.
-	 */
-	prototypeIndex: number,
-	/**
-	 * The properties of the RegExp.
-	 */
-	descriptors: GTDescriptor[],
-	/**
-	 * The internal value of the RegExp.
-	 */
-	internalValue: string
-];
-
-/**
- * A structured string object.
- */
-export type GTStringObject = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'String',
-	/**
-	 * The index of the prototype.
-	 */
-	prototypeIndex: number,
-	/**
-	 * The properties of the string object.
-	 */
-	descriptors: GTDescriptor[],
-	/**
-	 * The internal value of the string object.
-	 */
-	internalValue: string
 ];
 
 /**
@@ -342,11 +210,11 @@ export type GTMap = [
 	/**
 	 * The properties of the map.
 	 */
-	descriptors: GTDescriptor[],
+	properties: GTProperty[],
 	/**
-	 * The indexes of the internal key-value pairs of the map.
+	 * The indices of the key-value pairs of the map.
 	 */
-	internalValueIndexes: [number, number][]
+	valueIndices: [number, number][]
 ];
 
 /**
@@ -364,11 +232,143 @@ export type GTSet = [
 	/**
 	 * The properties of the set.
 	 */
-	descriptors: GTDescriptor[],
+	properties: GTProperty[],
 	/**
-	 * The indexes of the internal values of the set.
+	 * The indices of the values of the set.
 	 */
-	internalValueIndexes: number[]
+	valueIndices: number[]
+];
+
+/**
+ * A structured date.
+ */
+export type GTDate = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Date',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the date.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The value of the date.
+	 */
+	internalValue: number
+];
+
+/**
+ * A structured RegExp.
+ */
+export type GTRegExp = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'RegExp',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the RegExp.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The value of the RegExp.
+	 */
+	value: string
+];
+
+/**
+ * A structured boolean object.
+ */
+export type GTBooleanObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Boolean',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the boolean object.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The value of the boolean object.
+	 */
+	value: boolean
+];
+
+/**
+ * A structured number object.
+ */
+export type GTNumberObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Number',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the number object.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The value of the number object as a string.
+	 */
+	valueAsString: string
+];
+
+/**
+ * A structured string object.
+ */
+export type GTStringObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'String',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the string object.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The value of the string object.
+	 */
+	value: string
+];
+
+/**
+ * A structured BigInt object.
+ */
+export type GTBigIntObject = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'BigInt',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the BigInt object.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The value of the BigInt object as a string.
+	 */
+	valueAsString: string
 ];
 
 /**
@@ -386,23 +386,26 @@ export type GTSymbolObject = [
 	/**
 	 * The properties of the symbol object.
 	 */
-	descriptors: GTDescriptor[],
+	properties: GTProperty[],
 	/**
-	 * The description of the internal value.
+	 * The description of the symbol object.
 	 */
-	internalValueDescription: string,
+	description: string,
 	/**
-	 * The key of the internal value, if it has one.
+	 * The key of the symbol object.
 	 */
-	internalValueKey?: string
+	key?: string
 ];
 
-export type GTDescriptor = GTDataDescriptor | GTAccessorDescriptor;
+/**
+ * A property of a {@link GTObject}.
+ */
+export type GTProperty = GTDataProperty | GTAccessorProperty;
 
 /**
- * A data descriptor for a property of a {@link GTObject}.
+ * A data property of a {@link GTObject}.
  */
-export type GTDataDescriptor = [
+export type GTDataProperty = [
 	/**
 	 * The index of the key.
 	 */
@@ -426,9 +429,9 @@ export type GTDataDescriptor = [
 ];
 
 /**
- * An accessor descriptor for a property of a {@link GTObject}.
+ * An accessor property of a {@link GTObject}.
  */
-export type GTAccessorDescriptor = [
+export type GTAccessorProperty = [
 	/**
 	 * The index of the key.
 	 */
@@ -452,7 +455,7 @@ export type GTAccessorDescriptor = [
 ];
 
 /**
- * A reference to an external object.
+ * A reference to an external value.
  */
 export type GTReference = [
 	/**
@@ -460,7 +463,7 @@ export type GTReference = [
 	 */
 	type: 'reference',
 	/**
-	 * The identifier of the object.
+	 * The identifier of the value.
 	 */
 	identifier: string
 ];
