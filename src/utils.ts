@@ -69,11 +69,7 @@ export function safeTypeOf(value: any) {
 export function objectTypeOf(object: object) {
 	if (typeof Symbol !== 'undefined') {
 		// Check if the toStringTag was overwritten.
-		if (
-			Object.getOwnPropertySymbols(Object.getPrototypeOf(object)).indexOf(
-				Symbol.toStringTag
-			) > -1
-		) {
+		if ((object as any)[Symbol.toStringTag] !== undefined) {
 			return 'Object';
 		}
 	}
