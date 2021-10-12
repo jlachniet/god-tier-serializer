@@ -1,6 +1,6 @@
 import { setPrototypeOf } from './polyfills';
 import { GTAny } from './types';
-import { getDefinitionByIdentifier, safeTypeOf } from './utils';
+import { getDefinitionByIdentifier, safeTypeOf } from './utils/utils';
 import { isGTDataProperty, isGTObject } from './utils/predicates';
 
 /**

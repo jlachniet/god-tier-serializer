@@ -1,5 +1,5 @@
 import { GTAny, GTDataProperty, GTObject, GTProperty } from '../types';
-import { safeTypeOf } from '../utils';
+import { safeTypeOf } from './utils';
 
 /**
  * Checks whether a {@link GTAny} is a {@link GTObject}.

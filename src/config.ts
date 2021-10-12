@@ -1,4 +1,4 @@
-import { safeTypeOf } from './utils';
+import { safeTypeOf } from './utils/utils';
 
 export const config = {
 	/**

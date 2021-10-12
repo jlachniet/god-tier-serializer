@@ -6,8 +6,8 @@ import {
 	objectTypeOf,
 	safeIndexOf,
 	safeTypeOf,
-	structureTypedArray,
-} from './utils';
+	getTypedArrayTemplate,
+} from './utils/utils';
 
 /**
  * Serializes a value to a string.
@@ -235,37 +235,37 @@ export function serialize(value: any) {
 				mappedObj = ['Array', 0, []];
 				break;
 			case 'Int8Array':
-				mappedObj = structureTypedArray(object, Int8Array);
+				mappedObj = getTypedArrayTemplate(object, Int8Array);
 				break;
 			case 'Uint8Array':
-				mappedObj = structureTypedArray(object, Uint8Array);
+				mappedObj = getTypedArrayTemplate(object, Uint8Array);
 				break;
 			case 'Uint8ClampedArray':
-				mappedObj = structureTypedArray(object, Uint8ClampedArray);
+				mappedObj = getTypedArrayTemplate(object, Uint8ClampedArray);
 				break;
 			case 'Int16Array':
-				mappedObj = structureTypedArray(object, Int16Array);
+				mappedObj = getTypedArrayTemplate(object, Int16Array);
 				break;
 			case 'Uint16Array':
-				mappedObj = structureTypedArray(object, Uint16Array);
+				mappedObj = getTypedArrayTemplate(object, Uint16Array);
 				break;
 			case 'Int32Array':
-				mappedObj = structureTypedArray(object, Int32Array);
+				mappedObj = getTypedArrayTemplate(object, Int32Array);
 				break;
 			case 'Uint32Array':
-				mappedObj = structureTypedArray(object, Uint32Array);
+				mappedObj = getTypedArrayTemplate(object, Uint32Array);
 				break;
 			case 'Float32Array':
-				mappedObj = structureTypedArray(object, Float32Array);
+				mappedObj = getTypedArrayTemplate(object, Float32Array);
 				break;
 			case 'Float64Array':
-				mappedObj = structureTypedArray(object, Float64Array);
+				mappedObj = getTypedArrayTemplate(object, Float64Array);
 				break;
 			case 'BigInt64Array':
-				mappedObj = structureTypedArray(object, BigInt64Array);
+				mappedObj = getTypedArrayTemplate(object, BigInt64Array);
 				break;
 			case 'BigUint64Array':
-				mappedObj = structureTypedArray(object, BigUint64Array);
+				mappedObj = getTypedArrayTemplate(object, BigUint64Array);
 				break;
 			case 'Map':
 				mappedObj = ['Map', 0, [], []];

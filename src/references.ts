@@ -3,7 +3,7 @@ import {
 	getDefinitionByIdentifier,
 	getDefinitionByValue as getDefinitionByValue,
 	safeTypeOf,
-} from './utils';
+} from './utils/utils';
 
 /**
  * A definition consisting of a value and an identifier.

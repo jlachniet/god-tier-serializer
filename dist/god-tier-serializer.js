@@ -9,7 +9,7 @@
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.config = void 0;
-var utils_1 = __webpack_require__(593);
+var utils_1 = __webpack_require__(974);
 exports.config = {
     /**
      * Whether to infer a prototype's identifier during registration when
@@ -62,7 +62,7 @@ var _serializePrototypes = false;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deserialize = void 0;
 var polyfills_1 = __webpack_require__(360);
-var utils_1 = __webpack_require__(593);
+var utils_1 = __webpack_require__(974);
 var predicates_1 = __webpack_require__(673);
 /**
  * Deserializes a value from a string.
@@ -357,7 +357,7 @@ exports.setPrototypeOf = setPrototypeOf;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.register = exports.definitions = void 0;
 var _1 = __webpack_require__(607);
-var utils_1 = __webpack_require__(593);
+var utils_1 = __webpack_require__(974);
 exports.definitions = [
     [Object.prototype, 'Object'],
     [Array.prototype, 'Array'],
@@ -442,7 +442,7 @@ exports.register = register;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.serialize = void 0;
 var config_1 = __webpack_require__(913);
-var utils_1 = __webpack_require__(593);
+var utils_1 = __webpack_require__(974);
 /**
  * Serializes a value to a string.
  * @param value The value.
@@ -648,37 +648,37 @@ function serialize(value) {
                 mappedObj = ['Array', 0, []];
                 break;
             case 'Int8Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Int8Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Int8Array);
                 break;
             case 'Uint8Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Uint8Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Uint8Array);
                 break;
             case 'Uint8ClampedArray':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Uint8ClampedArray);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Uint8ClampedArray);
                 break;
             case 'Int16Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Int16Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Int16Array);
                 break;
             case 'Uint16Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Uint16Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Uint16Array);
                 break;
             case 'Int32Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Int32Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Int32Array);
                 break;
             case 'Uint32Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Uint32Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Uint32Array);
                 break;
             case 'Float32Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Float32Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Float32Array);
                 break;
             case 'Float64Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, Float64Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Float64Array);
                 break;
             case 'BigInt64Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, BigInt64Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, BigInt64Array);
                 break;
             case 'BigUint64Array':
-                mappedObj = (0, utils_1.structureTypedArray)(object, BigUint64Array);
+                mappedObj = (0, utils_1.getTypedArrayTemplate)(object, BigUint64Array);
                 break;
             case 'Map':
                 mappedObj = ['Map', 0, [], []];
@@ -750,12 +750,49 @@ exports.serialize = serialize;
 
 /***/ }),
 
-/***/ 593:
+/***/ 673:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.structureTypedArray = exports.numberToString = exports.getDefinitionByValue = exports.getDefinitionByIdentifier = exports.objectTypeOf = exports.safeTypeOf = exports.safeIndexOf = void 0;
+exports.isGTDataProperty = exports.isGTObject = void 0;
+var utils_1 = __webpack_require__(974);
+/**
+ * Checks whether a {@link GTAny} is a {@link GTObject}.
+ * @param value The GTAny.
+ * @returns Whether the GTAny is a GTObject.
+ * @internal
+ * ```ts
+ * isGTObject(['number', '3']) // false
+ * ```
+ */
+function isGTObject(value) {
+    return value[0].charAt(0) === value[0].charAt(0).toUpperCase();
+}
+exports.isGTObject = isGTObject;
+/**
+ * Checks whether a {@link GTProperty} is a {@link GTDataProperty}.
+ * @param value The GTProperty.
+ * @returns Whether the GTProperty is a GTDataProperty.
+ * @internal
+ * ```ts
+ * isGTDataProperty([1, 2, true, true, true]) // true
+ * ```
+ */
+function isGTDataProperty(value) {
+    return (0, utils_1.safeTypeOf)(value[2]) === 'boolean';
+}
+exports.isGTDataProperty = isGTDataProperty;
+
+
+/***/ }),
+
+/***/ 974:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTypedArrayTemplate = exports.numberToString = exports.getDefinitionByValue = exports.getDefinitionByIdentifier = exports.objectTypeOf = exports.safeTypeOf = exports.safeIndexOf = void 0;
 var polyfills_1 = __webpack_require__(360);
 var references_1 = __webpack_require__(886);
 /**
@@ -808,9 +845,12 @@ function safeTypeOf(value) {
 }
 exports.safeTypeOf = safeTypeOf;
 /**
- * Gets the native type of an object as a string.
+ * Gets the type of an object as a string.
+ *
+ * Note that this gets the type that the object was created as, so if you modify
+ * the prototype of the object, the same string will still be returned.
  * @param object The object.
- * @returns The native type of the object.
+ * @returns The type of the object.
  * @internal
  * ```ts
  * objectTypeOf([]) // 'Array'
@@ -818,7 +858,9 @@ exports.safeTypeOf = safeTypeOf;
  */
 function objectTypeOf(object) {
     if (typeof Symbol !== 'undefined') {
-        // Check if the toStringTag was overwritten.
+        // Check if Symbol.toStringTag was set on the object. It is assumed that
+        // this will only ever happen on user-created objects, and not on
+        // built-in objects.
         if (object[Symbol.toStringTag] !== undefined) {
             return 'Object';
         }
@@ -827,12 +869,12 @@ function objectTypeOf(object) {
 }
 exports.objectTypeOf = objectTypeOf;
 /**
- * Gets an object definition from an identifier.
+ * Gets a value definition from an identifier.
  * @param identifier The identifier.
- * @returns The object definition.
+ * @returns The value definition.
  * @internal
  * ```ts
- * getDefinitionByIdentifier('@Foo') // [{}, '@Foo']
+ * getDefinitionByIdentifier('Foo') // [{}, 'Foo']
  * ```
  */
 function getDefinitionByIdentifier(identifier) {
@@ -840,12 +882,12 @@ function getDefinitionByIdentifier(identifier) {
 }
 exports.getDefinitionByIdentifier = getDefinitionByIdentifier;
 /**
- * Gets an object definition from an object.
- * @param value The object.
- * @returns The object definition.
+ * Gets a value definition from a value.
+ * @param value The value.
+ * @returns The value definition.
  * @internal
  * ```ts
- * getDefinitionByObject({}) // [{}, '@Foo']
+ * getDefinitionByValue({}) // [{}, 'Foo']
  * ```
  */
 function getDefinitionByValue(value) {
@@ -867,7 +909,15 @@ function numberToString(number) {
     return (0, polyfills_1.objectIs)(number, -0) ? '-0' : String(number);
 }
 exports.numberToString = numberToString;
-function structureTypedArray(typedArray, constructor) {
+/**
+ * Creates a {@link GTTypedArray} with no properties from a typed array and a
+ * TypedArray constructor.
+ * @param typedArray The typed array.
+ * @param constructor The constructor.
+ * @returns
+ * @internal
+ */
+function getTypedArrayTemplate(typedArray, constructor) {
     return [
         constructor.name,
         0,
@@ -875,44 +925,7 @@ function structureTypedArray(typedArray, constructor) {
         constructor.prototype.toString.call(typedArray).split(',').length,
     ];
 }
-exports.structureTypedArray = structureTypedArray;
-
-
-/***/ }),
-
-/***/ 673:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isGTDataProperty = exports.isGTObject = void 0;
-var utils_1 = __webpack_require__(593);
-/**
- * Checks whether a {@link GTAny} is a {@link GTObject}.
- * @param value The GTAny.
- * @returns Whether the GTAny is a GTObject.
- * @internal
- * ```ts
- * isGTObject(['number', '3']) // false
- * ```
- */
-function isGTObject(value) {
-    return value[0].charAt(0) === value[0].charAt(0).toUpperCase();
-}
-exports.isGTObject = isGTObject;
-/**
- * Checks whether a {@link GTProperty} is a {@link GTDataProperty}.
- * @param value The GTProperty.
- * @returns Whether the GTProperty is a GTDataProperty.
- * @internal
- * ```ts
- * isGTDataProperty([1, 2, true, true, true]) // true
- * ```
- */
-function isGTDataProperty(value) {
-    return (0, utils_1.safeTypeOf)(value[2]) === 'boolean';
-}
-exports.isGTDataProperty = isGTDataProperty;
+exports.getTypedArrayTemplate = getTypedArrayTemplate;
 
 
 /***/ })

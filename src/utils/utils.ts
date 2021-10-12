@@ -1,6 +1,6 @@
-import { arrayFind, objectIs } from './polyfills';
-import { definitions } from './references';
-import { GTTypedArray } from './types';
+import { arrayFind, objectIs } from '../polyfills';
+import { definitions } from '../references';
+import { GTTypedArray } from '../types';
 
 /**
  * Gets the index of an element in an array.
@@ -46,21 +46,24 @@ export function safeTypeOf(value: any) {
 		// TypeScript doesn't recognize that typeof will not return 'function'
 		// so the output of the expression needs to be manually cast.
 		return typeof value as
-			| 'string'
-			| 'number'
-			| 'bigint'
-			| 'boolean'
-			| 'symbol'
 			| 'undefined'
-			| 'object'
-			| 'null';
+			| 'null'
+			| 'boolean'
+			| 'number'
+			| 'string'
+			| 'bigint'
+			| 'symbol'
+			| 'object';
 	}
 }
 
 /**
- * Gets the native type of an object as a string.
+ * Gets the type of an object as a string.
+ *
+ * Note that this gets the type that the object was created as, so if you modify
+ * the prototype of the object, the same string will still be returned.
  * @param object The object.
- * @returns The native type of the object.
+ * @returns The type of the object.
  * @internal
  * ```ts
  * objectTypeOf([]) // 'Array'
@@ -68,7 +71,9 @@ export function safeTypeOf(value: any) {
  */
 export function objectTypeOf(object: object) {
 	if (typeof Symbol !== 'undefined') {
-		// Check if the toStringTag was overwritten.
+		// Check if Symbol.toStringTag was set on the object. It is assumed that
+		// this will only ever happen on user-created objects, and not on
+		// built-in objects.
 		if ((object as any)[Symbol.toStringTag] !== undefined) {
 			return 'Object';
 		}
@@ -77,12 +82,12 @@ export function objectTypeOf(object: object) {
 }
 
 /**
- * Gets an object definition from an identifier.
+ * Gets a value definition from an identifier.
  * @param identifier The identifier.
- * @returns The object definition.
+ * @returns The value definition.
  * @internal
  * ```ts
- * getDefinitionByIdentifier('@Foo') // [{}, '@Foo']
+ * getDefinitionByIdentifier('Foo') // [{}, 'Foo']
  * ```
  */
 export function getDefinitionByIdentifier(identifier: string) {
@@ -90,12 +95,12 @@ export function getDefinitionByIdentifier(identifier: string) {
 }
 
 /**
- * Gets an object definition from an object.
- * @param value The object.
- * @returns The object definition.
+ * Gets a value definition from a value.
+ * @param value The value.
+ * @returns The value definition.
  * @internal
  * ```ts
- * getDefinitionByObject({}) // [{}, '@Foo']
+ * getDefinitionByValue({}) // [{}, 'Foo']
  * ```
  */
 export function getDefinitionByValue(value: any) {
@@ -117,12 +122,42 @@ export function numberToString(number: number) {
 	return objectIs(number, -0) ? '-0' : String(number);
 }
 
-export function structureTypedArray(
+/**
+ * Creates a {@link GTTypedArray} with no properties from a typed array and a
+ * TypedArray constructor.
+ * @param typedArray The typed array.
+ * @param constructor The constructor.
+ * @returns
+ * @internal
+ */
+export function getTypedArrayTemplate(
 	typedArray: object,
-	constructor: any
+	constructor:
+		| Int8ArrayConstructor
+		| Uint8ArrayConstructor
+		| Uint8ClampedArrayConstructor
+		| Int16ArrayConstructor
+		| Uint16ArrayConstructor
+		| Int32ArrayConstructor
+		| Uint32ArrayConstructor
+		| Float32ArrayConstructor
+		| Float64ArrayConstructor
+		| BigInt64ArrayConstructor
+		| BigUint64ArrayConstructor
 ): GTTypedArray {
 	return [
-		constructor.name,
+		constructor.name as
+			| 'Int8Array'
+			| 'Uint8Array'
+			| 'Uint8ClampedArray'
+			| 'Int16Array'
+			| 'Uint16Array'
+			| 'Int32Array'
+			| 'Uint32Array'
+			| 'Float32Array'
+			| 'Float64Array'
+			| 'BigInt64Array'
+			| 'BigUint64Array',
 		0,
 		[],
 		constructor.prototype.toString.call(typedArray).split(',').length,
