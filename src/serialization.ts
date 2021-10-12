@@ -25,7 +25,7 @@ export function serialize(value: any) {
 	// and adds the mapped value to the mapped values. This function will call
 	// itself recursively to handle its children and prototype, so once this
 	// call is done, both arrays will most likely contain several values.
-	mapValue(value, 'value');
+	mapValue(value, '(root)');
 
 	// Return the mapped values as text.
 	return JSON.stringify(mappedValues);
