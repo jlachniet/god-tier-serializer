@@ -1,12 +1,6 @@
 import { arrayFind, objectIs } from './polyfills';
 import { definitions } from './references';
-import {
-	GTAny,
-	GTDataProperty,
-	GTProperty,
-	GTObject,
-	GTTypedArray,
-} from './types';
+import { GTTypedArray } from './types';
 
 /**
  * Gets the index of an element in an array.
@@ -73,6 +67,16 @@ export function safeTypeOf(value: any) {
  * ```
  */
 export function objectTypeOf(object: object) {
+	if (typeof Symbol !== 'undefined') {
+		// Check if the toStringTag was overwritten.
+		if (
+			Object.getOwnPropertySymbols(Object.getPrototypeOf(object)).indexOf(
+				Symbol.toStringTag
+			) > -1
+		) {
+			return 'Object';
+		}
+	}
 	return Object.prototype.toString.call(object).slice(8, -1);
 }
 
