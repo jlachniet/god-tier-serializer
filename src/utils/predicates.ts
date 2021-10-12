@@ -1,4 +1,5 @@
-import { GTAny, GTDataProperty, GTObject, GTProperty } from '../types';
+import { GTDataProperty, GTObject, GTProperty } from '../types/objects';
+import { GTAny } from '../types/types';
 import { safeTypeOf } from './utils';
 
 /**

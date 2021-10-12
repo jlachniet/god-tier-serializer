@@ -58,8 +58,8 @@ var _serializePrototypes = false;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deserialize = void 0;
 var polyfills_1 = __webpack_require__(360);
-var utils_1 = __webpack_require__(974);
 var predicates_1 = __webpack_require__(673);
+var utils_1 = __webpack_require__(974);
 /**
  * Deserializes a value from a string.
  * @param string The serialized value.
@@ -352,6 +352,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.register = exports.definitions = void 0;
 var _1 = __webpack_require__(607);
 var utils_1 = __webpack_require__(974);
+// An array of definitions used during serialization and deserialization.
 exports.definitions = [
     [Object.prototype, 'Object'],
     [Array.prototype, 'Array'],
@@ -361,6 +362,8 @@ exports.definitions = [
     [RegExp.prototype, 'RegExp'],
     [String.prototype, 'String'],
 ];
+// Add definitions for built-in types that are not supported by all
+// environments, such as typed arrays, maps, sets, etc.
 typeof Int8Array !== 'undefined' &&
     exports.definitions.push([Int8Array.prototype, 'Int8Array']);
 typeof Uint8Array !== 'undefined' &&
@@ -394,11 +397,12 @@ typeof Symbol !== 'undefined' && exports.definitions.push([Symbol.prototype, 'Sy
  * @param identifier The identifier.
  */
 function register(value, identifier) {
-    // Validate that the arguments are of the correct types.
+    // Validate that the arguments are the correct types.
     if ((0, utils_1.safeTypeOf)(identifier) !== 'string' &&
         (0, utils_1.safeTypeOf)(identifier) !== 'undefined') {
         throw new TypeError("register called with invalid arguments, expected (any, string?) but got (" + (0, utils_1.safeTypeOf)(value) + ", " + (0, utils_1.safeTypeOf)(identifier) + ")");
     }
+    // If no identifier is provided, try to infer it.
     if (identifier === undefined) {
         if (value.constructor && value.constructor.name) {
             if (!_1.config.inferIdentifiers) {
@@ -410,9 +414,9 @@ function register(value, identifier) {
             throw new Error('register called without an identifier, and the identifier could not be inferred');
         }
     }
-    // Check if the object is already registered.
+    // Check if the value is already registered.
     if ((0, utils_1.getDefinitionByValue)(value)) {
-        throw new Error('register called with an object that is already registered');
+        throw new Error('register called with a value that is already registered');
     }
     // Check if the identifier is already registered.
     if ((0, utils_1.getDefinitionByIdentifier)(identifier)) {
@@ -446,7 +450,7 @@ function serialize(value) {
     var mappedValues = [];
     // Call the main function which adds a value to the known values, maps it,
     // and adds the mapped value to the mapped values. This function will call
-    // itself recursively to handle its children and prototype, so once this
+    // itself recursively to handle its properties and prototype, so once this
     // call is done, both arrays will most likely contain several values.
     mapValue(value, '(root)');
     // Return the mapped values as text.
@@ -464,6 +468,7 @@ function serialize(value) {
             // If the value is already mapped, return the index of the value.
             return (0, utils_1.safeIndexOf)(knownValues, value);
         }
+        // See if the value is registered, and return a GTReference if it is.
         var definition = (0, utils_1.getDefinitionByValue)(value);
         if (definition) {
             knownValues.push(value);
@@ -565,12 +570,11 @@ function serialize(value) {
      */
     function mapSymbol(symbol) {
         knownValues.push(symbol);
-        var description = String(symbol).substring(7, String(symbol).length - 1);
         if (Symbol.keyFor(symbol) === undefined) {
-            mappedValues.push(['symbol', description]);
+            mappedValues.push(['symbol', symbol.description]);
         }
         else {
-            mappedValues.push(['symbol', description, Symbol.keyFor(symbol)]);
+            mappedValues.push(['symbol', symbol.description, Symbol.keyFor(symbol)]);
         }
         return knownValues.length - 1;
     }

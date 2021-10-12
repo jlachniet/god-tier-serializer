@@ -1,7 +1,7 @@
 import { config } from '.';
 import {
 	getDefinitionByIdentifier,
-	getDefinitionByValue as getDefinitionByValue,
+	getDefinitionByValue,
 	safeTypeOf,
 } from './utils/utils';
 
@@ -19,6 +19,7 @@ type ValueDefinition = [
 	identifier: string
 ];
 
+// An array of definitions used during serialization and deserialization.
 export const definitions: ValueDefinition[] = [
 	[Object.prototype, 'Object'],
 	[Array.prototype, 'Array'],
@@ -29,6 +30,8 @@ export const definitions: ValueDefinition[] = [
 	[String.prototype, 'String'],
 ];
 
+// Add definitions for built-in types that are not supported by all
+// environments, such as typed arrays, maps, sets, etc.
 typeof Int8Array !== 'undefined' &&
 	definitions.push([Int8Array.prototype, 'Int8Array']);
 typeof Uint8Array !== 'undefined' &&
@@ -63,7 +66,7 @@ typeof Symbol !== 'undefined' && definitions.push([Symbol.prototype, 'Symbol']);
  * @param identifier The identifier.
  */
 export function register(value: any, identifier?: string) {
-	// Validate that the arguments are of the correct types.
+	// Validate that the arguments are the correct types.
 	if (
 		safeTypeOf(identifier) !== 'string' &&
 		safeTypeOf(identifier) !== 'undefined'
@@ -75,6 +78,7 @@ export function register(value: any, identifier?: string) {
 		);
 	}
 
+	// If no identifier is provided, try to infer it.
 	if (identifier === undefined) {
 		if (value.constructor && value.constructor.name) {
 			if (!config.inferIdentifiers) {
@@ -91,11 +95,9 @@ export function register(value: any, identifier?: string) {
 		}
 	}
 
-	// Check if the object is already registered.
+	// Check if the value is already registered.
 	if (getDefinitionByValue(value)) {
-		throw new Error(
-			'register called with an object that is already registered'
-		);
+		throw new Error('register called with a value that is already registered');
 	}
 
 	// Check if the identifier is already registered.

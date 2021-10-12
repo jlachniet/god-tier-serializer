@@ -1,7 +1,7 @@
 import { setPrototypeOf } from './polyfills';
-import { GTAny } from './types';
-import { getDefinitionByIdentifier, safeTypeOf } from './utils/utils';
+import { GTAny } from './types/types';
 import { isGTDataProperty, isGTObject } from './utils/predicates';
+import { getDefinitionByIdentifier, safeTypeOf } from './utils/utils';
 
 /**
  * Deserializes a value from a string.

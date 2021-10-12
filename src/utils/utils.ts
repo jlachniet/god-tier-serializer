@@ -1,6 +1,6 @@
 import { arrayFind, objectIs } from '../polyfills';
 import { definitions } from '../references';
-import { GTTypedArray } from '../types';
+import { GTTypedArray } from '../types/objects';
 
 /**
  * Gets the index of an element in an array.

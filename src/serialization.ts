@@ -1,12 +1,13 @@
 import { config } from './config';
-import { GTAny, GTMap, GTObject, GTSet } from './types';
+import { GTMap, GTObject, GTSet } from './types/objects';
+import { GTAny } from './types/types';
 import {
 	getDefinitionByValue,
+	getTypedArrayTemplate,
 	numberToString,
 	objectTypeOf,
 	safeIndexOf,
 	safeTypeOf,
-	getTypedArrayTemplate,
 } from './utils/utils';
 
 /**
@@ -23,7 +24,7 @@ export function serialize(value: any) {
 
 	// Call the main function which adds a value to the known values, maps it,
 	// and adds the mapped value to the mapped values. This function will call
-	// itself recursively to handle its children and prototype, so once this
+	// itself recursively to handle its properties and prototype, so once this
 	// call is done, both arrays will most likely contain several values.
 	mapValue(value, '(root)');
 
@@ -44,6 +45,7 @@ export function serialize(value: any) {
 			return safeIndexOf(knownValues, value);
 		}
 
+		// See if the value is registered, and return a GTReference if it is.
 		const definition = getDefinitionByValue(value);
 		if (definition) {
 			knownValues.push(value);
@@ -156,11 +158,10 @@ export function serialize(value: any) {
 	function mapSymbol(symbol: symbol) {
 		knownValues.push(symbol);
 
-		const description = String(symbol).substring(7, String(symbol).length - 1);
 		if (Symbol.keyFor(symbol) === undefined) {
-			mappedValues.push(['symbol', description]);
+			mappedValues.push(['symbol', symbol.description!]);
 		} else {
-			mappedValues.push(['symbol', description, Symbol.keyFor(symbol)]);
+			mappedValues.push(['symbol', symbol.description!, Symbol.keyFor(symbol)]);
 		}
 
 		return knownValues.length - 1;
