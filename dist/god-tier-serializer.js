@@ -112,10 +112,10 @@ function deserialize(string) {
                 break;
             case 'symbol':
                 if (mappedValue[2] === undefined) {
-                    originalValues[index] = Symbol(mappedValue[1]);
+                    originalValues[index] = Symbol(mappedValue[1] !== null ? mappedValue[1] : undefined);
                 }
                 else {
-                    originalValues[index] = Symbol.for(mappedValue[1]);
+                    originalValues[index] = Symbol.for(mappedValue[2]);
                 }
                 break;
             case 'reference':
@@ -192,10 +192,10 @@ function deserialize(string) {
                         break;
                     case 'Symbol':
                         if (mappedValue[4] === undefined) {
-                            originalValues[index] = new Object(Symbol(mappedValue[3]));
+                            originalValues[index] = new Object(Symbol(mappedValue[3] !== null ? mappedValue[3] : undefined));
                         }
                         else {
-                            originalValues[index] = new Object(Symbol.for(mappedValue[3]));
+                            originalValues[index] = new Object(Symbol.for(mappedValue[4]));
                         }
                         break;
                     default:
@@ -571,7 +571,10 @@ function serialize(value) {
     function mapSymbol(symbol) {
         knownValues.push(symbol);
         if (Symbol.keyFor(symbol) === undefined) {
-            mappedValues.push(['symbol', symbol.description]);
+            mappedValues.push([
+                'symbol',
+                symbol.description !== undefined ? symbol.description : null,
+            ]);
         }
         else {
             mappedValues.push(['symbol', symbol.description, Symbol.keyFor(symbol)]);
@@ -630,12 +633,17 @@ function serialize(value) {
                 break;
             case 'Symbol':
                 var symbol = Symbol.prototype.valueOf.call(object);
-                var description = String(symbol).substring(7, String(symbol).length - 1);
                 if (Symbol.keyFor(symbol) === undefined) {
-                    mappedObj = ['Symbol', 0, [], description];
+                    mappedObj = ['Symbol', 0, [], symbol.description];
                 }
                 else {
-                    mappedObj = ['Symbol', 0, [], description, Symbol.keyFor(symbol)];
+                    mappedObj = [
+                        'Symbol',
+                        0,
+                        [],
+                        symbol.description !== undefined ? symbol.description : null,
+                        Symbol.keyFor(symbol),
+                    ];
                 }
                 break;
             case 'Array':

@@ -1,5 +1,6 @@
 import { config } from './config';
 import { GTMap, GTObject, GTSet } from './types/objects';
+import { GTSymbol } from './types/primitives';
 import { GTAny } from './types/types';
 import {
 	getDefinitionByValue,
@@ -159,7 +160,10 @@ export function serialize(value: any) {
 		knownValues.push(symbol);
 
 		if (Symbol.keyFor(symbol) === undefined) {
-			mappedValues.push(['symbol', symbol.description!]);
+			mappedValues.push([
+				'symbol',
+				symbol.description !== undefined ? symbol.description! : null,
+			]);
 		} else {
 			mappedValues.push(['symbol', symbol.description!, Symbol.keyFor(symbol)]);
 		}
@@ -221,15 +225,17 @@ export function serialize(value: any) {
 				break;
 			case 'Symbol':
 				const symbol = Symbol.prototype.valueOf.call(object);
-				const description = String(symbol).substring(
-					7,
-					String(symbol).length - 1
-				);
 
 				if (Symbol.keyFor(symbol) === undefined) {
-					mappedObj = ['Symbol', 0, [], description];
+					mappedObj = ['Symbol', 0, [], symbol.description!];
 				} else {
-					mappedObj = ['Symbol', 0, [], description, Symbol.keyFor(symbol)];
+					mappedObj = [
+						'Symbol',
+						0,
+						[],
+						symbol.description !== undefined ? symbol.description! : null,
+						Symbol.keyFor(symbol),
+					];
 				}
 				break;
 			case 'Array':

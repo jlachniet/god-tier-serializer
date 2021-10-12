@@ -66,9 +66,11 @@ export function deserialize(string: string): unknown {
 				break;
 			case 'symbol':
 				if (mappedValue[2] === undefined) {
-					originalValues[index] = Symbol(mappedValue[1]);
+					originalValues[index] = Symbol(
+						mappedValue[1] !== null ? mappedValue[1] : undefined
+					);
 				} else {
-					originalValues[index] = Symbol.for(mappedValue[1]);
+					originalValues[index] = Symbol.for(mappedValue[2]);
 				}
 				break;
 			case 'reference':
@@ -147,9 +149,11 @@ export function deserialize(string: string): unknown {
 						break;
 					case 'Symbol':
 						if (mappedValue[4] === undefined) {
-							originalValues[index] = new Object(Symbol(mappedValue[3]));
+							originalValues[index] = new Object(
+								Symbol(mappedValue[3] !== null ? mappedValue[3] : undefined)
+							);
 						} else {
-							originalValues[index] = new Object(Symbol.for(mappedValue[3]));
+							originalValues[index] = new Object(Symbol.for(mappedValue[4]));
 						}
 						break;
 					default:

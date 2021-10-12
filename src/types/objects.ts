@@ -277,9 +277,9 @@ export type GTSymbolObject = [
 	 */
 	properties: GTProperty[],
 	/**
-	 * The description of the symbol object.
+	 * The description of the symbol object, or null if it doesn't have one.
 	 */
-	description: string,
+	description: string | null,
 	/**
 	 * The key of the symbol object.
 	 */

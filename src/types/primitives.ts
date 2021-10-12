@@ -95,9 +95,9 @@ export type GTSymbol = [
 	 */
 	type: 'symbol',
 	/**
-	 * The description.
+	 * The description, or null if it doesn't have one.
 	 */
-	description: string,
+	description: string | null,
 	/**
 	 * The key.
 	 */
