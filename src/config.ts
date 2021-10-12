@@ -26,9 +26,9 @@ export const config = {
 		// Validate that the value is the correct type.
 		if (safeTypeOf(value) !== 'boolean') {
 			throw new TypeError(
-				'config.inferIdentifiers set to invalid value, expected (boolean) but got (' +
-					safeTypeOf(value) +
-					')'
+				`config.inferIdentifiers set to invalid value, expected (boolean) but got (${safeTypeOf(
+					value
+				)})`
 			);
 		}
 		_inferIdentifiers = value;
@@ -38,9 +38,9 @@ export const config = {
 		// Validate that the value is the correct type.
 		if (safeTypeOf(value) !== 'boolean') {
 			throw new TypeError(
-				'config.serializePrototypes set to invalid value, expected (boolean) but got (' +
-					safeTypeOf(value) +
-					')'
+				`config.serializePrototypes set to invalid value, expected (boolean) but got (${safeTypeOf(
+					value
+				)})`
 			);
 		}
 		_serializePrototypes = value;

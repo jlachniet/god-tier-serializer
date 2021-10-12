@@ -69,11 +69,9 @@ export function register(value: any, identifier?: string) {
 		safeTypeOf(identifier) !== 'undefined'
 	) {
 		throw new TypeError(
-			'register called with invalid arguments, expected (any, string?) but got (' +
-				safeTypeOf(value) +
-				', ' +
-				safeTypeOf(identifier) +
-				')'
+			`register called with invalid arguments, expected (any, string?) but got (${safeTypeOf(
+				value
+			)}, ${safeTypeOf(identifier)})`
 		);
 	}
 

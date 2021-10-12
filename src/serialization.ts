@@ -72,7 +72,7 @@ export function serialize(value: any) {
 				return mapObject(value, path);
 			default:
 				throw new TypeError(
-					'Failed to serialize value with unknown type ' + safeTypeOf(value)
+					`Failed to serialize value with unknown type ${safeTypeOf(value)}`
 				);
 		}
 	}
@@ -189,7 +189,7 @@ export function serialize(value: any) {
 			case 'AsyncGeneratorFunction':
 			case 'Function':
 			case 'GeneratorFunction':
-				throw new Error('Could not serialize unregistered function at ' + path);
+				throw new Error(`Could not serialize unregistered function at ${path}`);
 			case 'BigInt':
 				mappedObj = [
 					'BigInt',
@@ -286,7 +286,7 @@ export function serialize(value: any) {
 			!config.serializePrototypes
 		) {
 			throw new Error(
-				'Could not serialize value with unregistered prototype at ' + path
+				`Could not serialize value with unregistered prototype at ${path}`
 			);
 		}
 		mappedObj[1] = mapValue(Object.getPrototypeOf(object), '');
@@ -303,15 +303,15 @@ export function serialize(value: any) {
 			if (descriptor.get || descriptor.set) {
 				mappedObj[2].push([
 					mapValue(key, ''),
-					mapValue(descriptor.get, path + '["' + String(key) + '" getter]'),
-					mapValue(descriptor.set, path + '["' + String(key) + '" setter]'),
+					mapValue(descriptor.get, `${path}["${String(key)}" getter]`),
+					mapValue(descriptor.set, `${path}["${String(key)}" setter]`),
 					descriptor.configurable!,
 					descriptor.enumerable!,
 				]);
 			} else {
 				mappedObj[2].push([
 					mapValue(key, ''),
-					mapValue(descriptor.value, path + '["' + String(key) + '"]'),
+					mapValue(descriptor.value, `${path}["${String(key)}"]`),
 					descriptor.configurable!,
 					descriptor.enumerable!,
 					descriptor.writable!,
@@ -323,8 +323,8 @@ export function serialize(value: any) {
 			let i = 0;
 			Map.prototype.forEach.call(object, (value, key) => {
 				(mappedObj as GTMap)[3].push([
-					mapValue(key, path + ' key#' + i),
-					mapValue(value, path + ' val#' + i),
+					mapValue(key, `${path} key#${i}`),
+					mapValue(value, `${path} val#${i}`),
 				]);
 				i++;
 			});
@@ -333,7 +333,7 @@ export function serialize(value: any) {
 		if (mappedObj[0] === 'Set') {
 			let i = 0;
 			Set.prototype.forEach.call(object, (value) => {
-				(mappedObj as GTSet)[3].push(mapValue(value, path + ' val#' + i));
+				(mappedObj as GTSet)[3].push(mapValue(value, `${path} val#${i}`));
 				i++;
 			});
 		}

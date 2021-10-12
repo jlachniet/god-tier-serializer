@@ -33,18 +33,14 @@ exports.config = {
     set inferIdentifiers(value) {
         // Validate that the value is the correct type.
         if ((0, utils_1.safeTypeOf)(value) !== 'boolean') {
-            throw new TypeError('config.inferIdentifiers set to invalid value, expected (boolean) but got (' +
-                (0, utils_1.safeTypeOf)(value) +
-                ')');
+            throw new TypeError("config.inferIdentifiers set to invalid value, expected (boolean) but got (" + (0, utils_1.safeTypeOf)(value) + ")");
         }
         _inferIdentifiers = value;
     },
     set serializePrototypes(value) {
         // Validate that the value is the correct type.
         if ((0, utils_1.safeTypeOf)(value) !== 'boolean') {
-            throw new TypeError('config.serializePrototypes set to invalid value, expected (boolean) but got (' +
-                (0, utils_1.safeTypeOf)(value) +
-                ')');
+            throw new TypeError("config.serializePrototypes set to invalid value, expected (boolean) but got (" + (0, utils_1.safeTypeOf)(value) + ")");
         }
         _serializePrototypes = value;
     },
@@ -71,9 +67,7 @@ var predicates_1 = __webpack_require__(673);
  */
 function deserialize(string) {
     if ((0, utils_1.safeTypeOf)(string) !== 'string') {
-        throw new TypeError('deserialize called with invalid arguments, expected (string) but got (' +
-            (0, utils_1.safeTypeOf)(string) +
-            ')');
+        throw new TypeError("deserialize called with invalid arguments, expected (string) but got (" + (0, utils_1.safeTypeOf)(string) + ")");
     }
     // Create arrays of mapped values (as parsed from the provided JSON) and
     // original values (regular JS values).
@@ -403,11 +397,7 @@ function register(value, identifier) {
     // Validate that the arguments are of the correct types.
     if ((0, utils_1.safeTypeOf)(identifier) !== 'string' &&
         (0, utils_1.safeTypeOf)(identifier) !== 'undefined') {
-        throw new TypeError('register called with invalid arguments, expected (any, string?) but got (' +
-            (0, utils_1.safeTypeOf)(value) +
-            ', ' +
-            (0, utils_1.safeTypeOf)(identifier) +
-            ')');
+        throw new TypeError("register called with invalid arguments, expected (any, string?) but got (" + (0, utils_1.safeTypeOf)(value) + ", " + (0, utils_1.safeTypeOf)(identifier) + ")");
     }
     if (identifier === undefined) {
         if (value.constructor && value.constructor.name) {
@@ -500,7 +490,7 @@ function serialize(value) {
             case 'object':
                 return mapObject(value, path);
             default:
-                throw new TypeError('Failed to serialize value with unknown type ' + (0, utils_1.safeTypeOf)(value));
+                throw new TypeError("Failed to serialize value with unknown type " + (0, utils_1.safeTypeOf)(value));
         }
     }
     /**
@@ -605,7 +595,7 @@ function serialize(value) {
             case 'AsyncGeneratorFunction':
             case 'Function':
             case 'GeneratorFunction':
-                throw new Error('Could not serialize unregistered function at ' + path);
+                throw new Error("Could not serialize unregistered function at " + path);
             case 'BigInt':
                 mappedObj = [
                     'BigInt',
@@ -694,7 +684,7 @@ function serialize(value) {
         if (Object.getPrototypeOf(object) !== null &&
             !(0, utils_1.getDefinitionByValue)(Object.getPrototypeOf(object)) &&
             !config_1.config.serializePrototypes) {
-            throw new Error('Could not serialize value with unregistered prototype at ' + path);
+            throw new Error("Could not serialize value with unregistered prototype at " + path);
         }
         mappedObj[1] = mapValue(Object.getPrototypeOf(object), '');
         var keys = Object.getOwnPropertyNames(object);
@@ -708,8 +698,8 @@ function serialize(value) {
             if (descriptor.get || descriptor.set) {
                 mappedObj[2].push([
                     mapValue(key, ''),
-                    mapValue(descriptor.get, path + '["' + String(key) + '" getter]'),
-                    mapValue(descriptor.set, path + '["' + String(key) + '" setter]'),
+                    mapValue(descriptor.get, path + "[\"" + String(key) + "\" getter]"),
+                    mapValue(descriptor.set, path + "[\"" + String(key) + "\" setter]"),
                     descriptor.configurable,
                     descriptor.enumerable,
                 ]);
@@ -717,7 +707,7 @@ function serialize(value) {
             else {
                 mappedObj[2].push([
                     mapValue(key, ''),
-                    mapValue(descriptor.value, path + '["' + String(key) + '"]'),
+                    mapValue(descriptor.value, path + "[\"" + String(key) + "\"]"),
                     descriptor.configurable,
                     descriptor.enumerable,
                     descriptor.writable,
@@ -728,8 +718,8 @@ function serialize(value) {
             var i_1 = 0;
             Map.prototype.forEach.call(object, function (value, key) {
                 mappedObj[3].push([
-                    mapValue(key, path + ' key#' + i_1),
-                    mapValue(value, path + ' val#' + i_1),
+                    mapValue(key, path + " key#" + i_1),
+                    mapValue(value, path + " val#" + i_1),
                 ]);
                 i_1++;
             });
@@ -737,7 +727,7 @@ function serialize(value) {
         if (mappedObj[0] === 'Set') {
             var i_2 = 0;
             Set.prototype.forEach.call(object, function (value) {
-                mappedObj[3].push(mapValue(value, path + ' val#' + i_2));
+                mappedObj[3].push(mapValue(value, path + " val#" + i_2));
                 i_2++;
             });
         }

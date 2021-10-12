@@ -11,9 +11,9 @@ import { isGTDataProperty, isGTObject } from './utils/predicates';
 export function deserialize(string: string): unknown {
 	if (safeTypeOf(string) !== 'string') {
 		throw new TypeError(
-			'deserialize called with invalid arguments, expected (string) but got (' +
-				safeTypeOf(string) +
-				')'
+			`deserialize called with invalid arguments, expected (string) but got (${safeTypeOf(
+				string
+			)})`
 		);
 	}
 
