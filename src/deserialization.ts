@@ -47,7 +47,7 @@ export function deserialize(string: string): unknown {
 			// If the mapped value is a GTPrimitive, convert to a native
 			// primitive.
 			case 'undefined':
-				originalValues[index] === undefined;
+				originalValues[index] = undefined;
 				break;
 			case 'null':
 				originalValues[index] = null;
@@ -75,16 +75,13 @@ export function deserialize(string: string): unknown {
 				break;
 			case 'reference':
 				// If the mapped value is a reference, get the definition and
-				// add the corresponding object.
+				// add the corresponding value.
 				originalValues[index] = getDefinitionByIdentifier(mappedValue[1])![0];
 				break;
 			default:
 				unmapValue(mappedValue[1]);
-				let isStandardObject = false;
 
-				// If none of the above apply, then the value is a GTObject.
-				// Unmap the prototype and then create a native object from the
-				// prototype.
+				// Unmap the GTObject to a regular object depending on the type.
 				switch (mappedValue[0]) {
 					case 'Array':
 						originalValues[index] = new Array();
@@ -122,17 +119,14 @@ export function deserialize(string: string): unknown {
 					case 'BigUint64Array':
 						originalValues[index] = new BigUint64Array(mappedValue[3]);
 						break;
-					case 'BigInt':
-						originalValues[index] = new Object(BigInt(mappedValue[3]));
+					case 'Set':
+						originalValues[index] = new Set();
 						break;
-					case 'Boolean':
-						originalValues[index] = new Boolean(mappedValue[3]);
+					case 'Map':
+						originalValues[index] = new Map();
 						break;
 					case 'Date':
 						originalValues[index] = new Date(mappedValue[3]);
-						break;
-					case 'Number':
-						originalValues[index] = new Number(mappedValue[3]);
 						break;
 					case 'RegExp':
 						const lastSlashPosition = mappedValue[3].lastIndexOf('/');
@@ -141,14 +135,14 @@ export function deserialize(string: string): unknown {
 
 						originalValues[index] = new RegExp(pattern, flags);
 						break;
+					case 'Boolean':
+						originalValues[index] = new Boolean(mappedValue[3]);
+						break;
+					case 'Number':
+						originalValues[index] = new Number(mappedValue[3]);
+						break;
 					case 'String':
 						originalValues[index] = new String(mappedValue[3]);
-						break;
-					case 'Map':
-						originalValues[index] = new Map();
-						break;
-					case 'Set':
-						originalValues[index] = new Set();
 						break;
 					case 'Symbol':
 						if (mappedValue[4] === undefined) {
@@ -159,13 +153,17 @@ export function deserialize(string: string): unknown {
 							originalValues[index] = new Object(Symbol.for(mappedValue[4]));
 						}
 						break;
+					case 'BigInt':
+						originalValues[index] = new Object(BigInt(mappedValue[3]));
+						break;
 					default:
 						originalValues[index] = Object.create(
 							originalValues[mappedValue[1]]
 						);
-						isStandardObject = true;
 				}
 
+				// Map the object's prototype if the object is not a standard
+				// object and the prototype doesn't match the type.
 				const proto = mappedValues[mappedValue[1]];
 				if (
 					mappedValue[0] !== 'Object' &&
@@ -178,45 +176,49 @@ export function deserialize(string: string): unknown {
 
 	mappedValues.forEach((value, index) => {
 		if (isGTObject(value)) {
-			// For each GTObject, convert the GTDescriptors into native descriptors.
-			value[2].forEach((descriptor) => {
-				if (isGTDataProperty(descriptor)) {
+			// For each GTObject, convert the GTProperties into native properties.
+			value[2].forEach((property) => {
+				if (isGTDataProperty(property)) {
+					// If the property is a data property.
 					Object.defineProperty(
 						originalValues[index],
-						originalValues[descriptor[0]],
+						originalValues[property[0]],
 						{
-							value: originalValues[descriptor[1]],
-							configurable: descriptor[2],
-							enumerable: descriptor[3],
-							writable: descriptor[4],
+							value: originalValues[property[1]],
+							configurable: property[2],
+							enumerable: property[3],
+							writable: property[4],
 						}
 					);
 				} else {
+					// If the property is an accessor property.
 					Object.defineProperty(
 						originalValues[index],
-						originalValues[descriptor[0]],
+						originalValues[property[0]],
 						{
-							get: originalValues[descriptor[1]],
-							set: originalValues[descriptor[2]],
-							configurable: descriptor[3],
-							enumerable: descriptor[4],
+							get: originalValues[property[1]],
+							set: originalValues[property[2]],
+							configurable: property[3],
+							enumerable: property[4],
 						}
 					);
 				}
 			});
 
+			// If the object is a set, unmap the values.
+			if (value[0] === 'Set') {
+				value[3].forEach((valueIndex) => {
+					originalValues[index].add(originalValues[valueIndex]);
+				});
+			}
+
+			// If the object is a map, unmap the keys and values.
 			if (value[0] === 'Map') {
 				value[3].forEach((keyValueIndex) => {
 					originalValues[index].set(
 						originalValues[keyValueIndex[0]],
 						originalValues[keyValueIndex[1]]
 					);
-				});
-			}
-
-			if (value[0] === 'Set') {
-				value[3].forEach((valueIndex) => {
-					originalValues[index].add(originalValues[valueIndex]);
 				});
 			}
 		}

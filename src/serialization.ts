@@ -162,7 +162,7 @@ export function serialize(value: any) {
 			// Normal symbol.
 			mappedValues.push([
 				'symbol',
-				symbol.description !== undefined ? symbol.description! : null,
+				symbol.description !== undefined ? symbol.description : null,
 			]);
 		} else {
 			// Symbol from the global registry.
@@ -266,7 +266,7 @@ export function serialize(value: any) {
 						'Symbol',
 						0,
 						[],
-						symbol.description !== undefined ? symbol.description! : null,
+						symbol.description !== undefined ? symbol.description : null,
 						Symbol.keyFor(symbol),
 					];
 				}
