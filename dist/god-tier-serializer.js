@@ -471,7 +471,7 @@ function serialize(value) {
             // If the value is already mapped, return the index of the value.
             return (0, utils_1.safeIndexOf)(knownValues, value);
         }
-        // See if the value is registered, and return a GTReference if it is.
+        // See if the value is registered, and create a GTReference if it is.
         var definition = (0, utils_1.getDefinitionByValue)(value);
         if (definition) {
             knownValues.push(value);
@@ -574,12 +574,14 @@ function serialize(value) {
     function mapSymbol(symbol) {
         knownValues.push(symbol);
         if (Symbol.keyFor(symbol) === undefined) {
+            // Normal symbol.
             mappedValues.push([
                 'symbol',
                 symbol.description !== undefined ? symbol.description : null,
             ]);
         }
         else {
+            // Symbol from the global registry.
             mappedValues.push(['symbol', symbol.description, Symbol.keyFor(symbol)]);
         }
         return knownValues.length - 1;
@@ -601,57 +603,11 @@ function serialize(value) {
         // reserve a position in the mapped values.
         var mappedObj;
         switch ((0, utils_1.objectTypeOf)(object)) {
-            case 'AsyncFunction':
-            case 'AsyncGeneratorFunction':
-            case 'Function':
-            case 'GeneratorFunction':
-                throw new Error("Could not serialize unregistered function at " + path);
-            case 'BigInt':
-                mappedObj = [
-                    'BigInt',
-                    0,
-                    [],
-                    String(BigInt.prototype.valueOf.call(object)),
-                ];
-                break;
-            case 'Boolean':
-                mappedObj = ['Boolean', 0, [], Boolean.prototype.valueOf.call(object)];
-                break;
-            case 'Date':
-                mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
-                break;
-            case 'Number':
-                mappedObj = [
-                    'Number',
-                    0,
-                    [],
-                    (0, utils_1.numberToString)(Number.prototype.valueOf.call(object)),
-                ];
-                break;
-            case 'RegExp':
-                mappedObj = ['RegExp', 0, [], RegExp.prototype.toString.call(object)];
-                break;
-            case 'String':
-                mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
-                break;
-            case 'Symbol':
-                var symbol = Symbol.prototype.valueOf.call(object);
-                if (Symbol.keyFor(symbol) === undefined) {
-                    mappedObj = ['Symbol', 0, [], symbol.description];
-                }
-                else {
-                    mappedObj = [
-                        'Symbol',
-                        0,
-                        [],
-                        symbol.description !== undefined ? symbol.description : null,
-                        Symbol.keyFor(symbol),
-                    ];
-                }
-                break;
             case 'Array':
                 mappedObj = ['Array', 0, []];
                 break;
+            // Typed arrays are functionally identical, so getTypedArrayTemplate
+            // will create the empty GTTypedArray based on the constructor.
             case 'Int8Array':
                 mappedObj = (0, utils_1.getTypedArrayTemplate)(object, Int8Array);
                 break;
@@ -685,12 +641,63 @@ function serialize(value) {
             case 'BigUint64Array':
                 mappedObj = (0, utils_1.getTypedArrayTemplate)(object, BigUint64Array);
                 break;
-            case 'Map':
-                mappedObj = ['Map', 0, [], []];
-                break;
             case 'Set':
                 mappedObj = ['Set', 0, [], []];
                 break;
+            case 'Map':
+                mappedObj = ['Map', 0, [], []];
+                break;
+            case 'Date':
+                mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
+                break;
+            case 'RegExp':
+                mappedObj = ['RegExp', 0, [], RegExp.prototype.toString.call(object)];
+                break;
+            case 'Boolean':
+                mappedObj = ['Boolean', 0, [], Boolean.prototype.valueOf.call(object)];
+                break;
+            case 'Number':
+                mappedObj = [
+                    'Number',
+                    0,
+                    [],
+                    (0, utils_1.numberToString)(Number.prototype.valueOf.call(object)),
+                ];
+                break;
+            case 'String':
+                mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
+                break;
+            case 'Symbol':
+                var symbol = Symbol.prototype.valueOf.call(object);
+                if (Symbol.keyFor(symbol) === undefined) {
+                    // Normal symbol.
+                    mappedObj = ['Symbol', 0, [], symbol.description];
+                }
+                else {
+                    // Symbol from the global registry.
+                    mappedObj = [
+                        'Symbol',
+                        0,
+                        [],
+                        symbol.description !== undefined ? symbol.description : null,
+                        Symbol.keyFor(symbol),
+                    ];
+                }
+                break;
+            case 'BigInt':
+                mappedObj = [
+                    'BigInt',
+                    0,
+                    [],
+                    String(BigInt.prototype.valueOf.call(object)),
+                ];
+                break;
+            case 'AsyncFunction':
+            case 'AsyncGeneratorFunction':
+            case 'Function':
+            case 'GeneratorFunction':
+                // For security reasons, functions cannot be serialized directly.
+                throw new Error("Could not serialize unregistered function at " + path);
             default:
                 mappedObj = ['Object', 0, []];
         }
@@ -702,6 +709,8 @@ function serialize(value) {
             throw new Error("Could not serialize value with unregistered prototype at " + path);
         }
         mappedObj[1] = mapValue(Object.getPrototypeOf(object), '');
+        // Gets the keys of the object (not including the ones in the prototype
+        // chain).
         var keys = Object.getOwnPropertyNames(object);
         if (Object.getOwnPropertySymbols) {
             keys = keys.concat(Object.getOwnPropertySymbols(object));
@@ -729,20 +738,22 @@ function serialize(value) {
                 ]);
             }
         });
-        if (mappedObj[0] === 'Map') {
+        // If the object is a set, map the values.
+        if (mappedObj[0] === 'Set') {
             var i_1 = 0;
-            Map.prototype.forEach.call(object, function (value, key) {
-                mappedObj[3].push([
-                    mapValue(key, path + " key#" + i_1),
-                    mapValue(value, path + " val#" + i_1),
-                ]);
+            Set.prototype.forEach.call(object, function (value) {
+                mappedObj[3].push(mapValue(value, path + " val#" + i_1));
                 i_1++;
             });
         }
-        if (mappedObj[0] === 'Set') {
+        // If the object is a map, map the key-value pairs.
+        if (mappedObj[0] === 'Map') {
             var i_2 = 0;
-            Set.prototype.forEach.call(object, function (value) {
-                mappedObj[3].push(mapValue(value, path + " val#" + i_2));
+            Map.prototype.forEach.call(object, function (value, key) {
+                mappedObj[3].push([
+                    mapValue(key, path + " key#" + i_2),
+                    mapValue(value, path + " val#" + i_2),
+                ]);
                 i_2++;
             });
         }

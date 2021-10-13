@@ -1,6 +1,5 @@
 import { config } from './config';
 import { GTMap, GTObject, GTSet } from './types/objects';
-import { GTSymbol } from './types/primitives';
 import { GTAny } from './types/types';
 import {
 	getDefinitionByValue,
@@ -46,7 +45,7 @@ export function serialize(value: any) {
 			return safeIndexOf(knownValues, value);
 		}
 
-		// See if the value is registered, and return a GTReference if it is.
+		// See if the value is registered, and create a GTReference if it is.
 		const definition = getDefinitionByValue(value);
 		if (definition) {
 			knownValues.push(value);
@@ -160,11 +159,13 @@ export function serialize(value: any) {
 		knownValues.push(symbol);
 
 		if (Symbol.keyFor(symbol) === undefined) {
+			// Normal symbol.
 			mappedValues.push([
 				'symbol',
 				symbol.description !== undefined ? symbol.description! : null,
 			]);
 		} else {
+			// Symbol from the global registry.
 			mappedValues.push(['symbol', symbol.description!, Symbol.keyFor(symbol)]);
 		}
 
@@ -189,57 +190,11 @@ export function serialize(value: any) {
 		// reserve a position in the mapped values.
 		let mappedObj: GTObject;
 		switch (objectTypeOf(object)) {
-			case 'AsyncFunction':
-			case 'AsyncGeneratorFunction':
-			case 'Function':
-			case 'GeneratorFunction':
-				throw new Error(`Could not serialize unregistered function at ${path}`);
-			case 'BigInt':
-				mappedObj = [
-					'BigInt',
-					0,
-					[],
-					String(BigInt.prototype.valueOf.call(object)),
-				];
-				break;
-			case 'Boolean':
-				mappedObj = ['Boolean', 0, [], Boolean.prototype.valueOf.call(object)];
-				break;
-			case 'Date':
-				mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
-				break;
-			case 'Number':
-				mappedObj = [
-					'Number',
-					0,
-					[],
-					numberToString(Number.prototype.valueOf.call(object)),
-				];
-				break;
-			case 'RegExp':
-				mappedObj = ['RegExp', 0, [], RegExp.prototype.toString.call(object)];
-				break;
-			case 'String':
-				mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
-				break;
-			case 'Symbol':
-				const symbol = Symbol.prototype.valueOf.call(object);
-
-				if (Symbol.keyFor(symbol) === undefined) {
-					mappedObj = ['Symbol', 0, [], symbol.description!];
-				} else {
-					mappedObj = [
-						'Symbol',
-						0,
-						[],
-						symbol.description !== undefined ? symbol.description! : null,
-						Symbol.keyFor(symbol),
-					];
-				}
-				break;
 			case 'Array':
 				mappedObj = ['Array', 0, []];
 				break;
+			// Typed arrays are functionally identical, so getTypedArrayTemplate
+			// will create the empty GTTypedArray based on the constructor.
 			case 'Int8Array':
 				mappedObj = getTypedArrayTemplate(object, Int8Array);
 				break;
@@ -273,12 +228,63 @@ export function serialize(value: any) {
 			case 'BigUint64Array':
 				mappedObj = getTypedArrayTemplate(object, BigUint64Array);
 				break;
-			case 'Map':
-				mappedObj = ['Map', 0, [], []];
-				break;
 			case 'Set':
 				mappedObj = ['Set', 0, [], []];
 				break;
+			case 'Map':
+				mappedObj = ['Map', 0, [], []];
+				break;
+			case 'Date':
+				mappedObj = ['Date', 0, [], Date.prototype.valueOf.call(object)];
+				break;
+			case 'RegExp':
+				mappedObj = ['RegExp', 0, [], RegExp.prototype.toString.call(object)];
+				break;
+			case 'Boolean':
+				mappedObj = ['Boolean', 0, [], Boolean.prototype.valueOf.call(object)];
+				break;
+			case 'Number':
+				mappedObj = [
+					'Number',
+					0,
+					[],
+					numberToString(Number.prototype.valueOf.call(object)),
+				];
+				break;
+			case 'String':
+				mappedObj = ['String', 0, [], String.prototype.valueOf.call(object)];
+				break;
+			case 'Symbol':
+				const symbol = Symbol.prototype.valueOf.call(object);
+
+				if (Symbol.keyFor(symbol) === undefined) {
+					// Normal symbol.
+					mappedObj = ['Symbol', 0, [], symbol.description!];
+				} else {
+					// Symbol from the global registry.
+					mappedObj = [
+						'Symbol',
+						0,
+						[],
+						symbol.description !== undefined ? symbol.description! : null,
+						Symbol.keyFor(symbol),
+					];
+				}
+				break;
+			case 'BigInt':
+				mappedObj = [
+					'BigInt',
+					0,
+					[],
+					String(BigInt.prototype.valueOf.call(object)),
+				];
+				break;
+			case 'AsyncFunction':
+			case 'AsyncGeneratorFunction':
+			case 'Function':
+			case 'GeneratorFunction':
+				// For security reasons, functions cannot be serialized directly.
+				throw new Error(`Could not serialize unregistered function at ${path}`);
 			default:
 				mappedObj = ['Object', 0, []];
 		}
@@ -297,6 +303,8 @@ export function serialize(value: any) {
 		}
 		mappedObj[1] = mapValue(Object.getPrototypeOf(object), '');
 
+		// Gets the keys of the object (not including the ones in the prototype
+		// chain).
 		let keys = Object.getOwnPropertyNames(object) as (string | symbol)[];
 		if (Object.getOwnPropertySymbols) {
 			keys = keys.concat(Object.getOwnPropertySymbols(object));
@@ -325,6 +333,16 @@ export function serialize(value: any) {
 			}
 		});
 
+		// If the object is a set, map the values.
+		if (mappedObj[0] === 'Set') {
+			let i = 0;
+			Set.prototype.forEach.call(object, (value) => {
+				(mappedObj as GTSet)[3].push(mapValue(value, `${path} val#${i}`));
+				i++;
+			});
+		}
+
+		// If the object is a map, map the key-value pairs.
 		if (mappedObj[0] === 'Map') {
 			let i = 0;
 			Map.prototype.forEach.call(object, (value, key) => {
@@ -332,14 +350,6 @@ export function serialize(value: any) {
 					mapValue(key, `${path} key#${i}`),
 					mapValue(value, `${path} val#${i}`),
 				]);
-				i++;
-			});
-		}
-
-		if (mappedObj[0] === 'Set') {
-			let i = 0;
-			Set.prototype.forEach.call(object, (value) => {
-				(mappedObj as GTSet)[3].push(mapValue(value, `${path} val#${i}`));
 				i++;
 			});
 		}
