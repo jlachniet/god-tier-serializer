@@ -32,9 +32,5 @@
 		"webpack": "^5.55.0",
 		"webpack-cli": "^4.8.0"
 	},
-	"prettier": {
-		"singleQuote": true,
-		"useTabs": true
-	},
 	"private": true
 }
