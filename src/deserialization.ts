@@ -131,6 +131,9 @@ export function deserialize(string: string): unknown {
 					case 'Date':
 						originalValues[index] = new Date(mappedValue[3]);
 						break;
+					case 'Number':
+						originalValues[index] = new Number(mappedValue[3]);
+						break;
 					case 'RegExp':
 						const lastSlashPosition = mappedValue[3].lastIndexOf('/');
 						const pattern = mappedValue[3].substring(1, lastSlashPosition);

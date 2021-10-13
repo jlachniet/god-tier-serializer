@@ -85,28 +85,6 @@ export type GTTypedArray = [
 ];
 
 /**
- * A structured map.
- */
-export type GTMap = [
-	/**
-	 * The type of the value.
-	 */
-	type: 'Map',
-	/**
-	 * The index of the prototype.
-	 */
-	prototypeIndex: number,
-	/**
-	 * The properties of the map.
-	 */
-	properties: GTProperty[],
-	/**
-	 * The indices of the key-value pairs of the map.
-	 */
-	valueIndices: [number, number][]
-];
-
-/**
  * A structured set.
  */
 export type GTSet = [
@@ -126,6 +104,28 @@ export type GTSet = [
 	 * The indices of the values of the set.
 	 */
 	valueIndices: number[]
+];
+
+/**
+ * A structured map.
+ */
+export type GTMap = [
+	/**
+	 * The type of the value.
+	 */
+	type: 'Map',
+	/**
+	 * The index of the prototype.
+	 */
+	prototypeIndex: number,
+	/**
+	 * The properties of the map.
+	 */
+	properties: GTProperty[],
+	/**
+	 * The indices of the key-value pairs of the map.
+	 */
+	valueIndices: [number, number][]
 ];
 
 /**

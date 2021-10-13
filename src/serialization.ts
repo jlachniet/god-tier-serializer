@@ -188,7 +188,6 @@ export function serialize(value: any) {
 		// will have its properties set later, for now it just needs to
 		// reserve a position in the mapped values.
 		let mappedObj: GTObject;
-
 		switch (objectTypeOf(object)) {
 			case 'AsyncFunction':
 			case 'AsyncGeneratorFunction':

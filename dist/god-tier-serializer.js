@@ -175,6 +175,9 @@ function deserialize(string) {
                     case 'Date':
                         originalValues[index] = new Date(mappedValue[3]);
                         break;
+                    case 'Number':
+                        originalValues[index] = new Number(mappedValue[3]);
+                        break;
                     case 'RegExp':
                         var lastSlashPosition = mappedValue[3].lastIndexOf('/');
                         var pattern = mappedValue[3].substring(1, lastSlashPosition);
@@ -859,13 +862,8 @@ exports.safeTypeOf = safeTypeOf;
  * ```
  */
 function objectTypeOf(object) {
-    if (typeof Symbol !== 'undefined') {
-        // Check if Symbol.toStringTag was set on the object. It is assumed that
-        // this will only ever happen on user-created objects, and not on
-        // built-in objects.
-        if (object[Symbol.toStringTag] !== undefined) {
-            return 'Object';
-        }
+    if (getDefinitionByValue(object)) {
+        console.log();
     }
     return Object.prototype.toString.call(object).slice(8, -1);
 }

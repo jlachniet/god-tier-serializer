@@ -70,13 +70,8 @@ export function safeTypeOf(value: any) {
  * ```
  */
 export function objectTypeOf(object: object) {
-	if (typeof Symbol !== 'undefined') {
-		// Check if Symbol.toStringTag was set on the object. It is assumed that
-		// this will only ever happen on user-created objects, and not on
-		// built-in objects.
-		if ((object as any)[Symbol.toStringTag] !== undefined) {
-			return 'Object';
-		}
+	if (getDefinitionByValue(object)) {
+		console.log();
 	}
 	return Object.prototype.toString.call(object).slice(8, -1);
 }
