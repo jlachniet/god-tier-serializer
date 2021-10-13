@@ -90,6 +90,40 @@ function deserialize(string: string): unknown;
 function register(value: any, identifier?: string): void;
 ```
 
+## Advanced usage:
+
+### Identifier inference:
+
+When you register a value, you must provide an identifier for it. This is to allow for backwards compatibility in your code. As long as your identifiers remain constant, the values that they are associated with can change. If you are registering a prototype of a function or class, the identifier may be able to be inferred if the prototype has a constructor with a name property.
+
+If you enable `config.inferIdentifiers` and call `register` without an identifier, the register function will check if `value.constructor.name` is set. If it is, it will use it as the identifier. This allows you to write code like this:
+
+```ts
+class Foo {}
+register(Foo.prototype);
+```
+
+Please use caution if you enable this setting. While convenient, it can cause compatibility problems. Most JavaScript built tools will perform minification, which will wreak havoc on function names. In addition, the `name` property is not supported in all environments. If your code is running in a browser, you likely want this to be disabled. If your code is running on a server and isn't going through a build tool, you can probably enable this safely.
+
+### Function serialization:
+
+Functions can only be serialized as references. This is to prevent arbitrary code execution exploits.
+
+### Prototype serialization:
+
+The `serialize` function will try to convert the value that you give it as accurately as possible. As part of the serialization process, the serializer will call itself recursively on properties and internal values. For example, serializing an object will serialize each of its properties, and the properties of those properties, and so on.
+
+In addition, objects have prototypes which must be serialized. In most code, these prototypes are defined by classes and functions. **god-tier-serializer** assumes that this is true by default. When the serializer encounters a prototype that it needs to serialize, it will check if the prototype is registered. If it is not, it will throw an error.
+
+If you need to store your prototypes as part of the serialization process, you can enable `config.serializePrototypes`. Unless you really
+know what you're doing, this is a bad idea. The object you serialize will not have the same prototype as the reconstructed object, but rather a reconstruction of the prototype.
+
+### Non-prototype registration:
+
+Most of the time, the `register` function is used for registering prototypes. Registration allows instances of your functions and classes to be serialized. This is helpful, since if you change your code to modify a prototype after serialization, the deserialization will still succeed. However, registration is not limited to prototypes. You can register any value you want. When the serializer encounters the value, it is converted to a reference.
+
+For example, if you know that the data you are serializing will contain a long constant piece of text that is stored elsewhere, it might make more sense to register the text. That way, the serialized string will not contain the text itself, but rather a reference to the text.
+
 ## Configuration:
 
 ```ts
