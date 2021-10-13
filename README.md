@@ -172,8 +172,8 @@ config.serializePrototypes = false;
       - Float64Array
       - BigInt64Array
       - BigUint64Array
-  - Map
   - Set
+  - Map
   - Date
   - RegExp
   - Primitive Wrapper Objects:
