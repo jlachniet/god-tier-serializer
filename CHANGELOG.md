@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.3
+
+- Add TypeScript definitions
+- Change error messages to include the "path" in an object at which they were thrown
+- Fixed symbols without a description not serializing correctly
+- Improved documentation
+
 ## 0.5.2
 
 - Fixed incorrect entry point for node

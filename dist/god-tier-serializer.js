@@ -1,4 +1,4 @@
-/*! god-tier-serializer 0.5.2 | MIT License | https://github.com/jlachniet/god-tier-serializer */
+/*! god-tier-serializer 0.5.3 | MIT License | https://github.com/jlachniet/god-tier-serializer */
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
