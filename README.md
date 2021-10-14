@@ -1,8 +1,8 @@
 # god-tier-serializer
 
 ![Release](https://img.shields.io/github/v/release/jlachniet/god-tier-serializer?include_prereleases)
-![Dependencies](https://img.shields.io/badge/dependencies-0-green)
 ![License](https://img.shields.io/npm/l/god-tier-serializer)
+![Tests](https://img.shields.io/github/workflow/status/jlachniet/god-tier-serializer/tests)
 ![Bundlephobia](https://img.shields.io/bundlephobia/min/god-tier-serializer)
 
 **<ins>Warning:</ins> god-tier-serializer is still under development and may contain bugs.**
