@@ -5,8 +5,6 @@
 ![Tests](https://img.shields.io/github/workflow/status/jlachniet/god-tier-serializer/tests)
 ![Bundlephobia](https://img.shields.io/bundlephobia/min/god-tier-serializer)
 
-**<ins>Warning:</ins> god-tier-serializer is still under development and may contain bugs.**
-
 _Convert any value to and from a serialized string with no headache._
 
 In JavaScript, you often need to store a variable for later, such as in local storage or a file. This means that you need your variable as a string. If your data is simple, then this conversion isn't too hard. But what do you do if you have a complicated data structure? **god-tier-serializer** solves this problem for you.

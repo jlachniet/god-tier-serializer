@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+
+- Initial production release
+
+This release is functionally identical to the previous release, and is intended for production use. While I have tried to test as thoroughly as possible, there may still be bugs. [Please report any issues you encounter.](https://github.com/jlachniet/god-tier-serializer/issues)
+
 ## 0.5.3
 
 - Add TypeScript definitions
