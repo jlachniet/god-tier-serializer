@@ -5,6 +5,9 @@ const {
 	register,
 } = require('../dist/god-tier-serializer');
 
+register('foo', 'foo');
+register('bar', 'foo');
+
 function roundtrip(value) {
 	return deserialize(serialize(value));
 }

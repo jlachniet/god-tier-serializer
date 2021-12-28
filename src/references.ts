@@ -20,44 +20,8 @@ type ValueDefinition = [
 ];
 
 // An array of definitions used during serialization and deserialization.
-export const definitions: ValueDefinition[] = [
-	[Object.prototype, 'Object'],
-	[Array.prototype, 'Array'],
-	[Boolean.prototype, 'Boolean'],
-	[Date.prototype, 'Date'],
-	[Number.prototype, 'Number'],
-	[RegExp.prototype, 'RegExp'],
-	[String.prototype, 'String'],
-];
-
-// Add definitions for built-in types that are not supported by all
-// environments, such as typed arrays, maps, sets, etc.
-typeof Int8Array !== 'undefined' &&
-	definitions.push([Int8Array.prototype, 'Int8Array']);
-typeof Uint8Array !== 'undefined' &&
-	definitions.push([Uint8Array.prototype, 'Uint8Array']);
-typeof Uint8ClampedArray !== 'undefined' &&
-	definitions.push([Uint8ClampedArray.prototype, 'Uint8ClampedArray']);
-typeof Int16Array !== 'undefined' &&
-	definitions.push([Int16Array.prototype, 'Int16Array']);
-typeof Uint16Array !== 'undefined' &&
-	definitions.push([Uint16Array.prototype, 'Uint16Array']);
-typeof Int32Array !== 'undefined' &&
-	definitions.push([Int32Array.prototype, 'Int32Array']);
-typeof Uint32Array !== 'undefined' &&
-	definitions.push([Uint32Array.prototype, 'Uint32Array']);
-typeof Float32Array !== 'undefined' &&
-	definitions.push([Float32Array.prototype, 'Float32Array']);
-typeof Float64Array !== 'undefined' &&
-	definitions.push([Float64Array.prototype, 'Float64Array']);
-typeof BigInt64Array !== 'undefined' &&
-	definitions.push([BigInt64Array.prototype, 'BigInt64Array']);
-typeof BigUint64Array !== 'undefined' &&
-	definitions.push([BigUint64Array.prototype, 'BigUint64Array']);
-typeof BigInt !== 'undefined' && definitions.push([BigInt.prototype, 'BigInt']);
-typeof Map !== 'undefined' && definitions.push([Map.prototype, 'Map']);
-typeof Set !== 'undefined' && definitions.push([Set.prototype, 'Set']);
-typeof Symbol !== 'undefined' && definitions.push([Symbol.prototype, 'Symbol']);
+export const definitions: ValueDefinition[] = [];
+let areBuiltInsRegistered = false;
 
 /**
  * Registers a value with an identifier so that it can be referenced during
@@ -66,6 +30,10 @@ typeof Symbol !== 'undefined' && definitions.push([Symbol.prototype, 'Symbol']);
  * @param identifier The identifier.
  */
 export function register(value: any, identifier?: string) {
+	if (!areBuiltInsRegistered) {
+		registerBuiltIns();
+	}
+
 	// Validate that the arguments are the correct types.
 	if (
 		safeTypeOf(identifier) !== 'string' &&
@@ -95,17 +63,60 @@ export function register(value: any, identifier?: string) {
 		}
 	}
 
-	// Check if the value is already registered.
-	if (getDefinitionByValue(value)) {
-		throw new Error('register called with a value that is already registered');
-	}
-
 	// Check if the identifier is already registered.
 	if (getDefinitionByIdentifier(identifier!)) {
-		throw new Error(
-			'register called with an identifier that is already registered'
-		);
+		// If it is, update the value.
+		getDefinitionByIdentifier(identifier!)![0] = value;
+	} else {
+		// Otherwise, create a new definition.
+		definitions.push([value, identifier!]);
+	}
+}
+
+export function registerBuiltIns() {
+	if (areBuiltInsRegistered) {
+		return;
 	}
 
-	definitions.push([value, identifier!]);
+	// Not true yet, but necessary to prevent this function from being executed
+	// again.
+	areBuiltInsRegistered = true;
+
+	// Add ES5 compatible definitions.
+	register(Object.prototype, 'Object');
+	register(Array.prototype, 'Array');
+	register(Boolean.prototype, 'Boolean');
+	register(Date.prototype, 'Date');
+	register(Number.prototype, 'Number');
+	register(RegExp.prototype, 'RegExp');
+	register(String.prototype, 'String');
+
+	// Add definitions for built-in types that are not supported by all
+	// environments, such as typed arrays, maps, sets, etc.
+	typeof Int8Array !== 'undefined' &&
+		register(Int8Array.prototype, 'Int8Array');
+	typeof Uint8Array !== 'undefined' &&
+		register(Uint8Array.prototype, 'Uint8Array');
+	typeof Uint8ClampedArray !== 'undefined' &&
+		register(Uint8ClampedArray.prototype, 'Uint8ClampedArray');
+	typeof Int16Array !== 'undefined' &&
+		register(Int16Array.prototype, 'Int16Array');
+	typeof Uint16Array !== 'undefined' &&
+		register(Uint16Array.prototype, 'Uint16Array');
+	typeof Int32Array !== 'undefined' &&
+		register(Int32Array.prototype, 'Int32Array');
+	typeof Uint32Array !== 'undefined' &&
+		register(Uint32Array.prototype, 'Uint32Array');
+	typeof Float32Array !== 'undefined' &&
+		register(Float32Array.prototype, 'Float32Array');
+	typeof Float64Array !== 'undefined' &&
+		register(Float64Array.prototype, 'Float64Array');
+	typeof BigInt64Array !== 'undefined' &&
+		register(BigInt64Array.prototype, 'BigInt64Array');
+	typeof BigUint64Array !== 'undefined' &&
+		register(BigUint64Array.prototype, 'BigUint64Array');
+	typeof BigInt !== 'undefined' && register(BigInt.prototype, 'BigInt');
+	typeof Map !== 'undefined' && register(Map.prototype, 'Map');
+	typeof Set !== 'undefined' && register(Set.prototype, 'Set');
+	typeof Symbol !== 'undefined' && register(Symbol.prototype, 'Symbol');
 }

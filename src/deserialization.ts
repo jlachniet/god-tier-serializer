@@ -1,4 +1,5 @@
 import { setPrototypeOf } from './polyfills';
+import { registerBuiltIns } from './references';
 import { GTAny } from './types/types';
 import { isGTDataProperty, isGTObject } from './utils/predicates';
 import { getDefinitionByIdentifier, safeTypeOf } from './utils/utils';
@@ -9,6 +10,9 @@ import { getDefinitionByIdentifier, safeTypeOf } from './utils/utils';
  * @returns The value.
  */
 export function deserialize(string: string): unknown {
+	// Make sure built-ins are registered.
+	registerBuiltIns();
+
 	if (safeTypeOf(string) !== 'string') {
 		throw new TypeError(
 			`deserialize called with invalid arguments, expected (string) but got (${safeTypeOf(

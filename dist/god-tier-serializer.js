@@ -58,6 +58,7 @@ var _serializePrototypes = false;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deserialize = void 0;
 var polyfills_1 = __webpack_require__(360);
+var references_1 = __webpack_require__(886);
 var predicates_1 = __webpack_require__(673);
 var utils_1 = __webpack_require__(974);
 /**
@@ -66,6 +67,8 @@ var utils_1 = __webpack_require__(974);
  * @returns The value.
  */
 function deserialize(string) {
+    // Make sure built-ins are registered.
+    (0, references_1.registerBuiltIns)();
     if ((0, utils_1.safeTypeOf)(string) !== 'string') {
         throw new TypeError("deserialize called with invalid arguments, expected (string) but got (" + (0, utils_1.safeTypeOf)(string) + ")");
     }
@@ -354,47 +357,12 @@ exports.setPrototypeOf = setPrototypeOf;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.register = exports.definitions = void 0;
+exports.registerBuiltIns = exports.register = exports.definitions = void 0;
 var _1 = __webpack_require__(607);
 var utils_1 = __webpack_require__(974);
 // An array of definitions used during serialization and deserialization.
-exports.definitions = [
-    [Object.prototype, 'Object'],
-    [Array.prototype, 'Array'],
-    [Boolean.prototype, 'Boolean'],
-    [Date.prototype, 'Date'],
-    [Number.prototype, 'Number'],
-    [RegExp.prototype, 'RegExp'],
-    [String.prototype, 'String'],
-];
-// Add definitions for built-in types that are not supported by all
-// environments, such as typed arrays, maps, sets, etc.
-typeof Int8Array !== 'undefined' &&
-    exports.definitions.push([Int8Array.prototype, 'Int8Array']);
-typeof Uint8Array !== 'undefined' &&
-    exports.definitions.push([Uint8Array.prototype, 'Uint8Array']);
-typeof Uint8ClampedArray !== 'undefined' &&
-    exports.definitions.push([Uint8ClampedArray.prototype, 'Uint8ClampedArray']);
-typeof Int16Array !== 'undefined' &&
-    exports.definitions.push([Int16Array.prototype, 'Int16Array']);
-typeof Uint16Array !== 'undefined' &&
-    exports.definitions.push([Uint16Array.prototype, 'Uint16Array']);
-typeof Int32Array !== 'undefined' &&
-    exports.definitions.push([Int32Array.prototype, 'Int32Array']);
-typeof Uint32Array !== 'undefined' &&
-    exports.definitions.push([Uint32Array.prototype, 'Uint32Array']);
-typeof Float32Array !== 'undefined' &&
-    exports.definitions.push([Float32Array.prototype, 'Float32Array']);
-typeof Float64Array !== 'undefined' &&
-    exports.definitions.push([Float64Array.prototype, 'Float64Array']);
-typeof BigInt64Array !== 'undefined' &&
-    exports.definitions.push([BigInt64Array.prototype, 'BigInt64Array']);
-typeof BigUint64Array !== 'undefined' &&
-    exports.definitions.push([BigUint64Array.prototype, 'BigUint64Array']);
-typeof BigInt !== 'undefined' && exports.definitions.push([BigInt.prototype, 'BigInt']);
-typeof Map !== 'undefined' && exports.definitions.push([Map.prototype, 'Map']);
-typeof Set !== 'undefined' && exports.definitions.push([Set.prototype, 'Set']);
-typeof Symbol !== 'undefined' && exports.definitions.push([Symbol.prototype, 'Symbol']);
+exports.definitions = [];
+var areBuiltInsRegistered = false;
 /**
  * Registers a value with an identifier so that it can be referenced during
  * serialization and retrieved during deserialization.
@@ -402,6 +370,9 @@ typeof Symbol !== 'undefined' && exports.definitions.push([Symbol.prototype, 'Sy
  * @param identifier The identifier.
  */
 function register(value, identifier) {
+    if (!areBuiltInsRegistered) {
+        registerBuiltIns();
+    }
     // Validate that the arguments are the correct types.
     if ((0, utils_1.safeTypeOf)(identifier) !== 'string' &&
         (0, utils_1.safeTypeOf)(identifier) !== 'undefined') {
@@ -419,17 +390,62 @@ function register(value, identifier) {
             throw new Error('register called without an identifier, and the identifier could not be inferred');
         }
     }
-    // Check if the value is already registered.
-    if ((0, utils_1.getDefinitionByValue)(value)) {
-        throw new Error('register called with a value that is already registered');
-    }
     // Check if the identifier is already registered.
     if ((0, utils_1.getDefinitionByIdentifier)(identifier)) {
-        throw new Error('register called with an identifier that is already registered');
+        // If it is, update the value.
+        (0, utils_1.getDefinitionByIdentifier)(identifier)[0] = value;
     }
-    exports.definitions.push([value, identifier]);
+    else {
+        // Otherwise, create a new definition.
+        exports.definitions.push([value, identifier]);
+    }
 }
 exports.register = register;
+function registerBuiltIns() {
+    if (areBuiltInsRegistered) {
+        return;
+    }
+    // Not true yet, but necessary to prevent this function from being executed
+    // again.
+    areBuiltInsRegistered = true;
+    // Add ES5 compatible definitions.
+    register(Object.prototype, 'Object');
+    register(Array.prototype, 'Array');
+    register(Boolean.prototype, 'Boolean');
+    register(Date.prototype, 'Date');
+    register(Number.prototype, 'Number');
+    register(RegExp.prototype, 'RegExp');
+    register(String.prototype, 'String');
+    // Add definitions for built-in types that are not supported by all
+    // environments, such as typed arrays, maps, sets, etc.
+    typeof Int8Array !== 'undefined' &&
+        register(Int8Array.prototype, 'Int8Array');
+    typeof Uint8Array !== 'undefined' &&
+        register(Uint8Array.prototype, 'Uint8Array');
+    typeof Uint8ClampedArray !== 'undefined' &&
+        register(Uint8ClampedArray.prototype, 'Uint8ClampedArray');
+    typeof Int16Array !== 'undefined' &&
+        register(Int16Array.prototype, 'Int16Array');
+    typeof Uint16Array !== 'undefined' &&
+        register(Uint16Array.prototype, 'Uint16Array');
+    typeof Int32Array !== 'undefined' &&
+        register(Int32Array.prototype, 'Int32Array');
+    typeof Uint32Array !== 'undefined' &&
+        register(Uint32Array.prototype, 'Uint32Array');
+    typeof Float32Array !== 'undefined' &&
+        register(Float32Array.prototype, 'Float32Array');
+    typeof Float64Array !== 'undefined' &&
+        register(Float64Array.prototype, 'Float64Array');
+    typeof BigInt64Array !== 'undefined' &&
+        register(BigInt64Array.prototype, 'BigInt64Array');
+    typeof BigUint64Array !== 'undefined' &&
+        register(BigUint64Array.prototype, 'BigUint64Array');
+    typeof BigInt !== 'undefined' && register(BigInt.prototype, 'BigInt');
+    typeof Map !== 'undefined' && register(Map.prototype, 'Map');
+    typeof Set !== 'undefined' && register(Set.prototype, 'Set');
+    typeof Symbol !== 'undefined' && register(Symbol.prototype, 'Symbol');
+}
+exports.registerBuiltIns = registerBuiltIns;
 
 
 /***/ }),
@@ -441,6 +457,7 @@ exports.register = register;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.serialize = void 0;
 var config_1 = __webpack_require__(913);
+var references_1 = __webpack_require__(886);
 var utils_1 = __webpack_require__(974);
 /**
  * Serializes a value to a string.
@@ -448,6 +465,8 @@ var utils_1 = __webpack_require__(974);
  * @returns The serialized value.
  */
 function serialize(value) {
+    // Make sure built-ins are registered.
+    (0, references_1.registerBuiltIns)();
     // To serialize a value, it must converted to an array of GTAny values.
     // Create a list of known values consisting of regular values, and an array
     // of mapped values consisting of the equivalent GTAny values.

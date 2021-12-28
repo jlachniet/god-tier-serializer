@@ -1,4 +1,5 @@
 import { config } from './config';
+import { registerBuiltIns } from './references';
 import { GTMap, GTObject, GTSet } from './types/objects';
 import { GTAny } from './types/types';
 import {
@@ -16,6 +17,9 @@ import {
  * @returns The serialized value.
  */
 export function serialize(value: any) {
+	// Make sure built-ins are registered.
+	registerBuiltIns();
+
 	// To serialize a value, it must converted to an array of GTAny values.
 	// Create a list of known values consisting of regular values, and an array
 	// of mapped values consisting of the equivalent GTAny values.
