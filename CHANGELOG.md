@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Allow identifiers and values to be registered multiple times, instead of throwing an error. This can be useful if your library is persisted after reloads in some frameworks such as Next.js. This unfortunately also means that this library will no longer warn you if you unintentionally register the same value or identifier twice.
+
 ## 1.0.0
 
 - Initial production release
